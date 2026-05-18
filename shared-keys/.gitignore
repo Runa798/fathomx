@@ -1,0 +1,10 @@
+# This directory contains private API keys and credentials.
+# These files must NOT be committed to git.
+# Share them privately (e.g., via encrypted chat or password manager).
+
+# Ignore everything...
+*
+
+# ...except these tracked files
+!.gitignore
+!README.md
