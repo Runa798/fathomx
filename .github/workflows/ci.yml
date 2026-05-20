@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ShellCheck install.sh
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: '.'
+          additional_files: 'install.sh'
+
+      - name: ShellCheck mcp-setup scripts
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: './mcp-setup'
+
+      - name: Markdown lint
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: '**/*.md'
+          config: '.markdownlint.json'
+
+  validate-skill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify skill structure
+        run: |
+          echo "Checking required skill files..."
+          test -f skill/SKILL.md || (echo "Missing skill/SKILL.md" && exit 1)
+          test -f skill/references/strategy.md || (echo "Missing strategy.md" && exit 1)
+          test -f skill/references/report-format.md || (echo "Missing report-format.md" && exit 1)
+          test -f skill/references/browser-layer.md || (echo "Missing browser-layer.md" && exit 1)
+          test -f skill/references/native-compat.md || (echo "Missing native-compat.md" && exit 1)
+          test -f skill/templates/quick-report.md || (echo "Missing quick-report.md" && exit 1)
+          test -f skill/templates/standard-report.md || (echo "Missing standard-report.md" && exit 1)
+          test -f skill/templates/deep-report.md || (echo "Missing deep-report.md" && exit 1)
+          echo "All skill files present."
+
+      - name: Check SKILL.md has required fields
+        run: |
+          grep -q "^name:" skill/SKILL.md || (echo "SKILL.md missing name field" && exit 1)
+          grep -q "^version:" skill/SKILL.md || (echo "SKILL.md missing version field" && exit 1)
+          echo "SKILL.md metadata OK."

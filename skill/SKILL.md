@@ -1,7 +1,7 @@
 ---
 name: deep-research
 description: Deep research orchestrator for Claude Code. Routes queries through Grok Search MCP, Exa MCP, and browser automation based on complexity. Produces formatted research reports with source attribution.
-version: 1.0.0
+version: 1.1.0
 author: Runa798
 license: MIT
 metadata:
@@ -89,6 +89,17 @@ After research completes, optionally restore CC native search if the user prefer
 | `get_code_context_exa` | `(query)` | Code-specific semantic search (GitHub, Stack Overflow, etc.). |
 | `deep_researcher_start` | `(...)` | Start an async deep research job. |
 | `deep_researcher_check` | `(...)` | Poll status of a running deep research job. |
+
+### Academic Search — Semantic Scholar (optional)
+
+For scientific/technical research topics, use the Semantic Scholar API via `web_fetch`. No API key required.
+
+Read `references/academic-search.md` for endpoint details, credibility mapping, and usage guidelines.
+
+| Action | Method |
+|--------|--------|
+| Search papers | `web_fetch("https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit=10&fields=title,url,year,authors,abstract,citationCount,venue,openAccessPdf")` |
+| Parse results | JSON response → filter by year, sort by citationCount |
 
 ### Browser Tools — Layer 2
 

@@ -8,7 +8,37 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILL_TARGET="${HOME}/.claude/skills/deep-research"
+
+# ─── Bash Guard ──────────────────────────────────────────────────────────────
+if [ -z "${BASH_VERSION:-}" ]; then
+  echo "This installer requires bash. Run: bash install.sh" >&2
+  exit 1
+fi
+
+# ─── Platform Detection ─────────────────────────────────────────────────────
+# Override via: CLAUDE_DEEP_RESEARCH_PLATFORM=codex ./install.sh
+detect_platform() {
+  if [[ -n "${CLAUDE_DEEP_RESEARCH_PLATFORM:-}" ]]; then
+    PLATFORM="${CLAUDE_DEEP_RESEARCH_PLATFORM}"
+  elif command -v claude &>/dev/null; then
+    PLATFORM="claude-code"
+  elif command -v opencode &>/dev/null; then
+    PLATFORM="opencode"
+  elif command -v codex &>/dev/null; then
+    PLATFORM="codex"
+  else
+    PLATFORM="unknown"
+  fi
+
+  case "${PLATFORM}" in
+    claude-code) SKILL_TARGET="${HOME}/.claude/skills/deep-research" ;;
+    opencode)    SKILL_TARGET="${HOME}/.claude/skills/deep-research" ;;
+    codex)       SKILL_TARGET="${CODEX_HOME:-${HOME}/.codex}/skills/deep-research" ;;
+    *)           SKILL_TARGET="${HOME}/.claude/skills/deep-research" ;;
+  esac
+}
+
+detect_platform
 
 # ─── Colors ──────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -99,7 +129,22 @@ check_cmd python3
 check_cmd uv
 check_cmd node
 check_cmd npm
-check_cmd claude
+
+if [[ "${PLATFORM}" == "claude-code" ]]; then
+  ok "Platform: Claude Code"
+  check_cmd claude
+elif [[ "${PLATFORM}" == "opencode" ]]; then
+  ok "Platform: OpenCode"
+  warn "MCP auto-registration not supported for OpenCode — you'll need to configure MCP servers manually"
+  warn "See: https://github.com/Runa798/claude-deep-research#opencode-setup"
+elif [[ "${PLATFORM}" == "codex" ]]; then
+  ok "Platform: Codex"
+  warn "MCP auto-registration not supported for Codex — you'll need to configure MCP servers manually"
+  warn "See: https://github.com/Runa798/claude-deep-research#codex-setup"
+else
+  warn "No supported AI coding IDE found (claude / opencode / codex)"
+  warn "Installing skill files only — configure MCP servers manually"
+fi
 
 # 2. Key validation
 section "Step 2/5  Checking API keys..."
@@ -135,7 +180,9 @@ fi
 # 3. Register GrokSearch MCP
 section "Step 3/5  Registering GrokSearch MCP..."
 
-if [[ "${MISSING_KEYS}" -eq 0 ]]; then
+if [[ "${PLATFORM}" != "claude-code" ]]; then
+  info "Skipping MCP registration (not Claude Code — configure manually)"
+elif [[ "${MISSING_KEYS}" -eq 0 ]]; then
   GROK_CONFIG=$(cat <<EOF
 {
   "type": "stdio",
@@ -167,7 +214,9 @@ fi
 # 4. Register Exa MCP (optional)
 section "Step 4/5  Registering Exa MCP (optional)..."
 
-if [[ -n "${EXA_API_KEY}" ]]; then
+if [[ "${PLATFORM}" != "claude-code" ]]; then
+  info "Skipping Exa MCP registration (not Claude Code)"
+elif [[ -n "${EXA_API_KEY}" ]]; then
   EXA_CONFIG=$(cat <<EOF
 {
   "type": "stdio",
@@ -260,10 +309,15 @@ echo -e "${BOLD}═════════════════════�
 echo -e "${GREEN}  Installation complete!${RESET}"
 echo -e "${BOLD}════════════════════════════════════════════${RESET}"
 echo
+echo "  Platform:    ${PLATFORM}"
 echo "  Skill:       ${SKILL_TARGET}"
-[[ "${MISSING_KEYS}" -eq 0 ]] && echo "  GrokSearch:  registered (user scope)" || echo "  GrokSearch:  SKIPPED (set GROK_API_KEY)"
-[[ -n "${EXA_API_KEY}" ]]     && echo "  Exa:         registered (user scope)" || echo "  Exa:         skipped  (set EXA_API_KEY)"
-echo
-echo "  To verify:   claude mcp list"
+if [[ "${PLATFORM}" == "claude-code" ]]; then
+  [[ "${MISSING_KEYS}" -eq 0 ]] && echo "  GrokSearch:  registered (user scope)" || echo "  GrokSearch:  SKIPPED (set GROK_API_KEY)"
+  [[ -n "${EXA_API_KEY}" ]]     && echo "  Exa:         registered (user scope)" || echo "  Exa:         skipped  (set EXA_API_KEY)"
+  echo
+  echo "  To verify:   claude mcp list"
+else
+  echo "  MCP:         manual config required (see README)"
+fi
 echo "  To remove:   ./install.sh --uninstall"
 echo

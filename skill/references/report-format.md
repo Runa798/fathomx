@@ -21,6 +21,28 @@ Formatting standards for all research output produced by the deep-research skill
 
 ---
 
+## Source Credibility Ratings
+
+Every source cited in a report MUST receive a credibility rating. This is distinct from conclusion-level confidence indicators (🟢🟡🔴) — credibility rates the **source itself**, not the claim derived from it.
+
+| Rating | Type | Examples | Weight |
+|--------|------|----------|--------|
+| **A** | Peer-reviewed / Official | Academic papers, official documentation, government reports, RFC/specs | Highest — can anchor conclusions alone |
+| **B** | Authoritative media | Major news outlets (Reuters, Bloomberg), established industry analysts (Gartner, IDC) | High — trusted unless contradicted by A |
+| **C** | Professional content | Tech blogs (company engineering blogs), conference talks, well-sourced articles | Medium — useful corroboration |
+| **D** | Community / User-generated | Forum posts (Reddit, HN, V2EX, 知乎), personal blogs, social media threads | Low — anecdotal, requires cross-reference |
+| **E** | Unverified / AI-generated | No clear author, suspected AI content, SEO-farm articles, undated pages | Minimal — flag explicitly, never use alone |
+
+### How to Apply
+
+1. **Source table**: Add a `Credibility` column to every source list (see Section 5)
+2. **Weighting**: When sources conflict, A/B sources override C/D/E sources
+3. **Minimum bar**: A 🟢 confidence conclusion requires at least one A or B source among its citations
+4. **Flagging**: Any conclusion relying solely on D/E sources must receive 🔴 confidence regardless of source count
+5. **Mixed ratings**: When citing `[1][2][3]` where ratings are A, D, C → note the strongest rating in context if relevant
+
+---
+
 ## Report Structure
 
 Adapt sections based on the report template (quick/standard/deep), but the general order is:
@@ -47,12 +69,17 @@ Where do Grok and Exa results agree? Where do they diverge? Are there conflictin
 ### 5. Sources
 Numbered list. Include title, URL, and access date for every source cited in the report.
 
-```
-[1] Title of the page — https://example.com/page (accessed 2026-05-18)
-[2] Title of the article — https://another.com/article (accessed 2026-05-18)
+```markdown
+| # | Title | URL | Credibility | Accessed | Notes |
+|---|-------|-----|-------------|----------|-------|
+| [1] | Official API Documentation | https://example.com/docs | A | 2026-05-18 | |
+| [2] | Industry Analysis Report | https://analyst.com/report | B | 2026-05-18 | |
+| [3] | Engineering Blog Post | https://eng.company.com/post | C | 2026-05-18 | full text retrieved |
+| [4] | Reddit Discussion Thread | https://reddit.com/r/topic | D | 2026-05-18 | anecdotal |
 ```
 
-If a source was retrieved via `web_fetch` for full-text verification, note it with `(full text retrieved)`.
+- If a source was retrieved via `web_fetch` for full-text verification, note it with `full text retrieved`.
+- If a source has unclear authorship or provenance, rate it E and flag it explicitly.
 
 ### 6. Methodology
 Brief notes on:

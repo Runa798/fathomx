@@ -1,9 +1,22 @@
 {
   "name": "claude-deep-research",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Claude Code deep research skill — Three-layer search orchestration (Grok + Exa + Browser) with intelligent routing and formatted reports",
   "author": "huangguaheye <huangguaheye@gmail.com>",
   "license": "MIT",
+  "bin": {
+    "claude-deep-research": "./install.js"
+  },
+  "files": [
+    "install.js",
+    "install.sh",
+    "skill/",
+    "mcp-setup/",
+    ".env.example",
+    "README.md",
+    "README_EN.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Runa798/claude-deep-research.git"
@@ -20,8 +33,11 @@
     "ai-search",
     "grok",
     "exa",
+    "semantic-scholar",
     "web-scraping",
-    "research-tool"
+    "research-tool",
+    "opencode",
+    "codex"
   ],
   "private": false
 }

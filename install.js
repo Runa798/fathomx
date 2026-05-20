@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+
+const { execSync, spawn } = require("child_process");
+const path = require("path");
+const fs = require("fs");
+const os = require("os");
+
+const REPO_URL = "https://github.com/Runa798/claude-deep-research.git";
+const CLONE_DIR = path.join(os.tmpdir(), "claude-deep-research-install");
+
+function run(cmd, opts = {}) {
+  return execSync(cmd, { stdio: "inherit", ...opts });
+}
+
+function main() {
+  if (os.platform() === "win32") {
+    console.error("\nWindows is not directly supported. Please use WSL2:");
+    console.error("  wsl npx claude-deep-research\n");
+    process.exit(1);
+  }
+
+  const args = process.argv.slice(2);
+  const isUninstall = args.includes("--uninstall");
+
+  console.log("\n🔍 Claude Deep Research — Installer\n");
+
+  if (isUninstall) {
+    console.log("Running uninstall...\n");
+    const skillTarget = path.join(os.homedir(), ".claude", "skills", "deep-research");
+    try {
+      run("claude mcp remove grok-search 2>/dev/null || true");
+      run("claude mcp remove exa 2>/dev/null || true");
+      if (fs.existsSync(skillTarget)) {
+        fs.rmSync(skillTarget, { recursive: true, force: true });
+        console.log(`Removed: ${skillTarget}`);
+      }
+      console.log("\n✅ Uninstall complete.\n");
+    } catch (e) {
+      console.error("Uninstall error:", e.message);
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (fs.existsSync(CLONE_DIR)) {
+    fs.rmSync(CLONE_DIR, { recursive: true, force: true });
+  }
+
+  console.log("Cloning repository...");
+  run(`git clone --depth 1 ${REPO_URL} "${CLONE_DIR}"`);
+
+  const envExample = path.join(CLONE_DIR, ".env.example");
+  const envTarget = path.join(CLONE_DIR, ".env");
+  if (!fs.existsSync(envTarget) && fs.existsSync(envExample)) {
+    fs.copyFileSync(envExample, envTarget);
+    console.log("\nCreated .env from .env.example");
+    console.log("⚠️  Edit API keys before running install.sh:");
+    console.log(`   ${envTarget}\n`);
+  }
+
+  console.log("Running install.sh...\n");
+  const installScript = path.join(CLONE_DIR, "install.sh");
+  fs.chmodSync(installScript, "755");
+
+  const child = spawn("bash", [installScript], {
+    cwd: CLONE_DIR,
+    stdio: "inherit",
+    env: { ...process.env },
+  });
+
+  child.on("close", (code) => {
+    if (code === 0) {
+      console.log("\n💡 To configure API keys later:");
+      console.log(`   cd ${CLONE_DIR} && $EDITOR .env && ./install.sh\n`);
+    }
+    process.exit(code);
+  });
+}
+
+main();

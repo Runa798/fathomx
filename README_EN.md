@@ -90,7 +90,15 @@ cd claude-deep-research
 ./install.sh
 ```
 
-The install script handles everything: registering GrokSearch MCP, registering Exa MCP, installing the Skill to `~/.claude/skills/`, and generating a `.env` config file.
+The install script auto-detects your platform and installs the Skill. For Claude Code, it also registers MCP servers automatically. For OpenCode and Codex, MCP servers must be configured manually.
+
+> **Supported platforms**: Claude Code (fully automatic) | OpenCode (Skill auto + MCP manual) | Codex (Skill auto + MCP manual)
+
+### Install via npx (recommended)
+
+```bash
+npx claude-deep-research
+```
 
 ### Manual Installation
 

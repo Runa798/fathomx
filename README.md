@@ -89,7 +89,15 @@ cd claude-deep-research
 ./install.sh
 ```
 
-安装脚本会自动完成：注册 GrokSearch MCP、注册 Exa MCP、安装 Skill 到 `~/.claude/skills/`、创建 `.env` 配置文件。
+安装脚本会自动检测 IDE 平台并安装 Skill。Claude Code 用户还会自动注册 MCP 服务；OpenCode/Codex 用户需手动配置 MCP。
+
+> **支持的平台**: Claude Code (全自动) | OpenCode (Skill 自动 + MCP 手动) | Codex (Skill 自动 + MCP 手动)
+
+### 通过 npx 安装（推荐）
+
+```bash
+npx claude-deep-research
+```
 
 ### 手动安装
 
