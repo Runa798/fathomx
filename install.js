@@ -12,6 +12,17 @@ function run(cmd, opts = {}) {
   return execSync(cmd, { stdio: "inherit", ...opts });
 }
 
+function runSetup() {
+  const child = spawn("python3", ["-m", "deep_research", "setup"], {
+    stdio: "inherit",
+    env: { ...process.env },
+  });
+
+  child.on("close", (code) => {
+    process.exit(code);
+  });
+}
+
 function main() {
   if (os.platform() === "win32") {
     console.error("\nWindows is not directly supported. Please use WSL2:");
@@ -21,8 +32,15 @@ function main() {
 
   const args = process.argv.slice(2);
   const isUninstall = args.includes("--uninstall");
+  const invokedAs = path.basename(process.argv[1] || "");
+  const isSetup = args.includes("--setup") || invokedAs === "fathomx-setup";
 
   console.log("\n🔍 Claude Deep Research — Installer\n");
+
+  if (isSetup) {
+    runSetup();
+    return;
+  }
 
   if (isUninstall) {
     console.log("Running uninstall...\n");
@@ -70,6 +88,9 @@ function main() {
 
   child.on("close", (code) => {
     if (code === 0) {
+      console.log("\n💡 To launch the full setup TUI:");
+      console.log("   npx claude-deep-research --setup");
+      console.log("   or: python3 -m deep_research setup");
       console.log("\n💡 To configure API keys later:");
       console.log(`   cd ${CLONE_DIR} && $EDITOR .env && ./install.sh\n`);
     }

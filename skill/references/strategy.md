@@ -1,17 +1,37 @@
 # Research Execution Strategy
 
-Detailed three-tier strategy for the deep-research skill. Read this file before executing any research task.
+Detailed strategy for the deep-research skill. Read this file before executing any research task.
+
+This is the v1.2.0 strategy with multi-model orchestration support. When orchestrator is unavailable, each phase falls back to Claude-only execution (v1.1.0 compatible).
+
+---
+
+## Pre-Execution: Configuration Check
+
+Before any research, run:
+
+```bash
+python3 -m deep_research config check
+```
+
+Parse the JSON output. Key fields:
+- `multi_model: true` → orchestrator available, use multi-model flow
+- `multi_model: false` → Claude-only mode (still use new methodology)
+- `available_tiers` → which model tiers can be delegated
+- `gemini_search: true` → Gemini Search available as supplementary source
+
+If the command fails (exit code non-zero or not found), proceed in Claude-only mode.
 
 ---
 
 ## Tier 1: Quick Research (单一事实查询)
 
-**Trigger**: Simple factual question, definition, or single data point that can be answered from one authoritative source.
+**Trigger**: Simple factual question, definition, or single data point.
 
 **Execution**:
 1. Run one `mcp__grok-search__web_search` call with the user's query.
-2. If the result is empty or irrelevant, rephrase once and retry.
-3. No need to use Exa or browser for Quick tier.
+2. If empty or irrelevant, rephrase once and retry.
+3. No orchestrator, no scope expansion, no personas.
 
 **Report**: Use `templates/quick-report.md`
 
@@ -21,128 +41,213 @@ Detailed three-tier strategy for the deep-research skill. Read this file before 
 
 ## Tier 2: Standard Research (对比/选型/评估)
 
-**Trigger**: Comparison between products/technologies, vendor evaluation, multi-source synthesis needed.
+**Trigger**: Comparison, evaluation, multi-source synthesis needed.
 
-**Execution**:
+### Phase 1 — Scope Expansion + Planning
 
-1. **Planning** — Decompose the query using the Grok planning pipeline:
-   - `plan_intent(query)` → `plan_complexity(...)` → `plan_sub_query(...)` → `plan_search_term(...)` → `plan_tool_mapping(...)` → `plan_execution(...)`
-   - This produces a structured list of sub-queries and tool assignments.
+Read `references/methodology.md` §1 and apply MECE scope expansion:
+1. Infer the decision intent from the user's question
+2. Generate sub-questions for at least 4 of the 6 MECE dimensions
+3. Apply the three research personas mentally (no orchestrator calls for Standard)
+4. Create a brief research plan (can be in-conversation, no need for workspace file)
 
-2. **Grok searches** — For each sub-query from the plan:
-   - Call `mcp__grok-search__web_search` with `extra_sources=5`
-   - Collect all `session_id` values for source retrieval later
+### Phase 2 — Multi-Tool Search
 
-3. **Exa searches** (parallel with Grok):
-   - Use `mcp__exa__web_search_exa` or `mcp__exa__web_search_advanced_exa` for semantic discovery
-   - For product/company comparisons, run `mcp__exa__company_research_exa` for each subject
+Use the Grok planning pipeline for query decomposition:
+`plan_intent` → `plan_complexity` → `plan_sub_query` → `plan_search_term` → `plan_tool_mapping` → `plan_execution`
 
-4. **Source collection**:
-   - Call `mcp__grok-search__get_sources(session_id)` for each Grok session
-   - Aggregate all source URLs from both Grok and Exa
+Execute searches in parallel:
+- **Grok**: `web_search` with `extra_sources=5` per sub-query
+- **Exa**: `web_search_exa` or `web_search_advanced_exa` for semantic discovery
+- **Exa company**: `company_research_exa` for each identified competitor (DO NOT skip this for competitive research)
+- **(If gemini_search available)**: `python3 -m deep_research run gemini_search --workspace {session-dir-or-temp} --query "..." --output "search/gemini-{topic}.md"`
 
-5. **Deduplication**:
-   - Remove duplicate URLs across Grok and Exa source lists
-   - Merge overlapping content from the same source
+Collect all `session_id` values for source retrieval.
 
-6. **Verification** (for key claims only):
-   - Use `mcp__grok-search__web_fetch(url)` to get full page content for the most critical claims
-   - No need to fetch every source — spot-check the most consequential ones
+### Phase 3 — Optional Extraction (if FAST tier available)
+
+If `multi_model: true` and FAST tier is available:
+1. Write raw search results to `workspace/search/raw-{dimension}.md`
+2. Call orchestrator: `python3 -m deep_research run search_extract --dimension {dim} ...`
+3. Read extracted results from `workspace/search/{dim}.md`
+
+If FAST tier unavailable: Claude synthesizes directly from raw search results.
+
+### Phase 4 — Synthesis
+
+Apply all three persona lenses (§2 of methodology.md) during synthesis:
+- Market Analyst perspective on market/trend dimensions
+- CI Analyst perspective on competitive dimensions
+- Product Strategist perspective on user/strategic dimensions
+
+Perform one gap check (§3 of methodology.md). If gaps found, run targeted supplementary searches (max 1 iteration).
 
 **Report**: Use `templates/standard-report.md`
 
-**Expected time**: 2–5 minutes
+**Expected time**: 2-5 minutes
 
 ---
 
 ## Tier 3: Deep Research (产业分析/竞品图谱/市场格局)
 
-**Trigger**: Industry-wide analysis, comprehensive competitive landscape, market sizing study, or any research requiring 10+ distinct sources.
+**Trigger**: Industry analysis, competitive landscape, market sizing, or any research requiring 10+ distinct sources.
 
-**Disk Persistence**: Deep research MUST write intermediate results to disk. This prevents context overflow during multi-wave research and enables session recovery if interrupted.
+**Disk Persistence**: Deep research MUST write intermediate results to disk.
 
 **Session directory**: `workspace/research-{YYYY-MM-DD}-{topic-slug}/`
 
-The `workspace/` directory is local generated state, intentionally ignored by git. Files inside are ephemeral and safe to delete after research is complete.
+Topic slug sanitization rules: lowercase ASCII, replace non-ASCII with `-`, remove shell metacharacters, collapse repeated `-`, cap at 60 chars.
 
-**Topic slug sanitization**: The topic slug MUST be sanitized before use in a path:
-- Lowercase ASCII only, replace whitespace and CJK characters with `-`
-- Remove `/`, `\`, `.`, `~`, `:`, shell metacharacters, and control characters
-- Collapse repeated `-`, strip leading/trailing `-`
-- Cap at 60 characters
-- Always create the session directory under the repository-local `workspace/` directory — never use absolute paths or `..`
+### Phase 1 — Scope Expansion + Planning (Claude, STRATEGIC)
 
-**Execution**:
+Read `references/methodology.md` §1 and apply FULL MECE scope expansion:
 
-### Phase 1 — Planning
-Use the full Grok planning pipeline: `plan_intent` → `plan_complexity` → `plan_sub_query` → `plan_search_term` → `plan_tool_mapping` → `plan_execution`. This produces a multi-wave execution plan.
+1. Infer decision intent
+2. Generate sub-questions for ALL 6 dimensions:
+   - Market Context
+   - Competitive Landscape
+   - User Jobs & Needs
+   - Product Capabilities
+   - Strategic Position
+   - Future Trajectory
+3. Apply STORM-style perspective discovery: generate 3 expert viewpoints via the research personas
+4. Create tool-to-dimension mapping (§4 of methodology.md)
 
-**Checkpoint**: Write the execution plan to `{session-dir}/plan.md`.
+**Checkpoint**: Write `{session-dir}/plan.md` with the expanded scope and dimension assignments.
 
-### Phase 2 — Wave 1: Broad Sweep
-Run all of the following in parallel where possible:
-
-- **Grok broad searches**: `mcp__grok-search__web_search` with `extra_sources=20` across multiple angles (e.g., "market overview", "key players", "recent trends", "competitive dynamics")
-- **Exa semantic search**: `mcp__exa__web_search_exa` for entity and concept discovery
-- **Exa company research**: `mcp__exa__company_research_exa` for each major player identified
-- **Exa similar entities**: Use `mcp__exa__web_search_advanced_exa` with `find_similar` style queries to discover unknown competitors or alternatives
-- **Academic search** (if topic is scientific/technical): Query Semantic Scholar API via `web_fetch` for peer-reviewed papers. See `references/academic-search.md` for details. Use 2-3 query variations. Filter results by `year >= current_year - 2` and sort by `citationCount`.
-
-**Checkpoint**: Write Wave 1 raw findings to `{session-dir}/wave-1-broad.md` — include all search results, source URLs, and entity list. This file becomes the input for Wave 2.
-
-### Phase 3 — Wave 2: Deep Dive
-Based on Wave 1 discoveries (read from `{session-dir}/wave-1-broad.md` if resuming):
-
-- **Grok secondary searches**: Validate entities and claims discovered by Exa in Wave 1
-- **Full-page extraction**: `mcp__grok-search__web_fetch(url)` for the 5–10 most important pages
-- **Site mapping**: `mcp__grok-search__web_map(url)` for structured documentation sites or company blogs when systematic coverage is needed
-- **Async deep research**: For known domains with rich content, use `mcp__exa__deep_researcher_start(...)` and poll with `mcp__exa__deep_researcher_check(...)`
-
-**Checkpoint**: Write Wave 2 deep findings to `{session-dir}/wave-2-deep.md` — include full-text extractions, validated claims, and newly discovered entities.
-
-### Phase 4 — Wave 3: Gap Filling (conditional)
-Only if Wave 1 + 2 leave unresolved gaps (read from `{session-dir}/wave-2-deep.md` if resuming):
-
-- Check if missing content is behind a login wall or requires JavaScript rendering
-- If yes: escalate to browser layer (read `references/browser-layer.md`)
-- Use **agent-browser** for known page structures (targeted extraction)
-- Use **browser-use** for exploratory multi-step navigation
-
-**Checkpoint** (if Wave 3 was executed): Write browser-retrieved content to `{session-dir}/wave-3-browser.md`.
-
-### Phase 5 — Synthesis
-1. Read all checkpoint files from `{session-dir}/` (plan.md, wave-1-broad.md, wave-2-deep.md, wave-3-browser.md)
-2. Aggregate all sources: Grok sessions (`get_sources`), Exa results, browser extractions
-3. Deduplicate by URL and content similarity
-4. Resolve conflicts: where sources disagree, note the conflict and present all versions
-5. Structure findings by topic dimension (not by tool used)
-6. Assign confidence indicators per finding (see `references/report-format.md`)
-7. Assign source credibility ratings A–E per source (see `references/report-format.md`)
-
-**Report**: Use `templates/deep-report.md`. Write final report to `{session-dir}/report.md`.
-
-**Session state**: Write `{session-dir}/state.json` at each checkpoint:
+Write `{session-dir}/state.json`:
 ```json
 {
   "topic": "research topic",
   "tier": "deep",
-  "status": "in_progress | completed",
-  "currentPhase": 1-5,
+  "status": "in_progress",
+  "currentPhase": 1,
   "startedAt": "ISO datetime",
   "updatedAt": "ISO datetime",
   "sourceCount": 0,
-  "checkpoints": ["plan.md", "wave-1-broad.md"]
+  "dimensions": {
+    "market-context": "pending",
+    "competitive-landscape": "pending",
+    "user-jobs": "pending",
+    "product-capabilities": "pending",
+    "strategic-position": "pending",
+    "future-trajectory": "pending"
+  },
+  "personas": {},
+  "checkpoints": ["plan.md"]
 }
 ```
 
+### Phase 2 — Multi-Dimensional Search + Extract
+
+Run ALL of the following in parallel where possible:
+
+**MCP searches (Claude directly)**:
+- **Grok broad**: `web_search` with `extra_sources=20` per dimension
+- **Exa semantic**: `web_search_exa` for entity/concept discovery
+- **Exa company**: `company_research_exa` for EACH major player — this is MANDATORY for competitive research
+- **Exa similar**: `web_search_advanced_exa` with find_similar queries
+- **Academic** (if scientific topic): Semantic Scholar via `web_fetch` (see `references/academic-search.md`)
+
+Write raw results to `{session-dir}/search/raw-{dimension}.md` for each dimension.
+
+**Orchestrator extraction (if FAST tier available)**:
+For each dimension with raw data:
+```bash
+python3 -m deep_research run search_extract \
+  --workspace {session-dir} \
+  --dimension {dimension-name} \
+  --context "{brief topic context}"
+```
+
+This calls the FAST model (DeepSeek) to extract structured data. Output: `{session-dir}/search/{dimension}.md`.
+
+If FAST tier unavailable: Claude extracts directly (higher cost, same quality).
+
+**Gemini supplementary search (if SEARCH tier available)**:
+```bash
+python3 -m deep_research run gemini_search \
+  --workspace {session-dir} \
+  --query "{dimension-specific query}" \
+  --output "search/gemini-{dimension}.md"
+```
+
+**Checkpoint**: Update dimensions in state.json to "searched". Add checkpoint files.
+
+### Phase 3 — Persona Analysis + Gap Detection
+
+**Orchestrator persona analysis (if SMART tier available)**:
+```bash
+python3 -m deep_research run analyze --persona market-analyst --workspace {session-dir} --context "..."
+python3 -m deep_research run analyze --persona ci-analyst --workspace {session-dir} --context "..."
+python3 -m deep_research run analyze --persona product-strategist --workspace {session-dir} --context "..."
+```
+
+This calls the SMART model (GPT) with embedded analytical frameworks. Output: `{session-dir}/analysis/{persona}.md`.
+
+If SMART tier unavailable: Claude applies persona lenses directly during synthesis.
+
+**Gap Detection (Claude directly)**:
+Read all search and analysis files. Apply gap checklist from methodology.md §3:
+- Source count per dimension (≥3 independent sources?)
+- Source diversity (≥2 source types?)
+- Contradiction resolution (all conflicts noted?)
+- Factual grounding (numerical evidence for key claims?)
+- Recency (data within 12 months?)
+
+If gaps found:
+1. Construct targeted supplementary searches
+2. Execute via MCP tools
+3. Write to `{session-dir}/search/gap-{dimension}.md`
+4. Re-run extraction if orchestrator available
+
+Maximum 2 gap-fill iterations.
+
+**Checkpoint**: Update state.json currentPhase, add checkpoint files.
+
+### Phase 4 — Compression + Synthesis
+
+**Compression (if orchestrator available)**:
+```bash
+python3 -m deep_research run compress --workspace {session-dir} --context "..."
+```
+
+Output: `{session-dir}/compressed/findings-summary.md` — all findings compressed to ~55% token retention, preserving reasoning chains and contradictions.
+
+If orchestrator unavailable: Claude reads all files directly for synthesis.
+
+**Synthesis (Claude, STRATEGIC tier with max thinking)**:
+
+Read `{session-dir}/compressed/findings-summary.md` (or all raw files if no compression).
+Read all `{session-dir}/analysis/*.md` files.
+
+Apply multi-framework analysis:
+1. SWOT with evidence citations and "so what" implications
+2. ERRC Grid (Eliminate, Reduce, Raise, Create)
+3. JTBD opportunity scores where applicable
+4. Porter's Five Forces for competitive dimensions
+
+Generate the final report following `templates/deep-report.md`:
+- Organized by the 6 MECE dimensions, NOT by tool or search round
+- Every claim cited with source [n]
+- Every source rated A-E for credibility
+- Confidence indicators (🟢🟡🔴) on key findings
+- Recommendations trace back to evidence
+- Explicit gaps and limitations in Methodology section
+
+**Write**: `{session-dir}/report.md` and present to user.
+
+Update state.json: `status: "completed"`, `currentPhase: 4`.
+
+**Expected time**: 5-15 minutes
+
 ### Resuming an Interrupted Session
-If a `{session-dir}/state.json` exists with `status: "in_progress"`:
-1. Read `state.json` to determine `currentPhase`
+
+If `{session-dir}/state.json` exists with `status: "in_progress"`:
+1. Read state.json to determine currentPhase
 2. Read all existing checkpoint files
 3. Resume from the next incomplete phase — do NOT re-execute completed phases
-4. This is especially useful for deep research that was interrupted by context limits, rate limits, or user disconnection
-
-**Expected time**: 5–15 minutes
+4. Check dimension status in state.json to know which dimensions need work
 
 ---
 
@@ -150,18 +255,19 @@ If a `{session-dir}/state.json` exists with `status: "in_progress"`:
 
 | Situation | Action |
 |-----------|--------|
-| Grok returns empty or irrelevant result | Rephrase query once and retry; if still fails, route same query to Exa |
-| Exa also returns poor results | Escalate to browser layer |
-| Browser layer hits Cloudflare Turnstile or CAPTCHA | Stop automation; inform user; provide the URL for manual access |
-| All three layers fail for a specific URL | Skip that source; note it in the Methodology section of the report |
-| Sources conflict on a key fact | Present all conflicting versions with full citations; do not silently resolve |
-| Rate limit on Grok or Exa | Wait 5 seconds and retry once; if still blocked, switch to the other tool for the remaining queries |
+| Grok returns empty | Rephrase once and retry; if still fails, route to Exa |
+| Exa also poor results | Escalate to browser layer (read `references/browser-layer.md`) |
+| Browser hits CAPTCHA | Stop automation; inform user; provide URL for manual access |
+| All layers fail for a URL | Skip that source; note in Methodology section |
+| Sources conflict | Present all versions with full citations; do not silently resolve |
+| Rate limit on Grok/Exa | Wait 5s and retry once; if blocked, switch to the other tool |
+| Orchestrator task fails | Claude does that step itself; announce degraded mode to user |
+| Orchestrator not installed | Full v1.1.0 compatible mode with methodology enhancements |
 
 ## Parallel Execution Note
 
-For Deep tier research, sub-tasks that do not depend on each other should be dispatched as parallel sub-agents:
-- Sub-agent A: All Grok searches
-- Sub-agent B: All Exa discovery searches
-- Main agent: Planning, synthesis, report generation
-
-This reduces total wall-clock time from 15+ minutes to 5–8 minutes for comprehensive studies.
+For Deep tier, maximize parallelism:
+- MCP searches across dimensions: parallel sub-agents or parallel tool calls
+- Orchestrator extract tasks: can be called sequentially (each is fast, ~10-30s)
+- Persona analyses: call all three in rapid succession (each takes 30-60s)
+- Gap-fill searches: parallel where possible

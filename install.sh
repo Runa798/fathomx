@@ -113,7 +113,7 @@ fi
 section "=== Installing claude-deep-research ==="
 
 # 1. Prerequisites
-section "Step 1/5  Checking prerequisites..."
+section "Step 1/7  Checking prerequisites..."
 
 check_cmd() {
   local cmd="$1"
@@ -147,7 +147,7 @@ else
 fi
 
 # 2. Key validation
-section "Step 2/5  Checking API keys..."
+section "Step 2/7  Checking API keys..."
 
 MISSING_KEYS=0
 
@@ -178,7 +178,7 @@ else
 fi
 
 # 3. Register GrokSearch MCP
-section "Step 3/5  Registering GrokSearch MCP..."
+section "Step 3/7  Registering GrokSearch MCP..."
 
 if [[ "${PLATFORM}" != "claude-code" ]]; then
   info "Skipping MCP registration (not Claude Code — configure manually)"
@@ -212,7 +212,7 @@ else
 fi
 
 # 4. Register Exa MCP (optional)
-section "Step 4/5  Registering Exa MCP (optional)..."
+section "Step 4/7  Registering Exa MCP (optional)..."
 
 if [[ "${PLATFORM}" != "claude-code" ]]; then
   info "Skipping Exa MCP registration (not Claude Code)"
@@ -243,7 +243,7 @@ else
 fi
 
 # 5. Install skill
-section "Step 5/5  Installing deep-research skill..."
+section "Step 5/7  Installing deep-research skill..."
 
 SKILL_SOURCE="${SCRIPT_DIR}/skill"
 
@@ -272,8 +272,75 @@ else
   ok "Skill copied to ${SKILL_TARGET}"
 fi
 
-# 6. Disable CC native search (optional but recommended)
-section "Step 6/6  Disabling Claude Code native search..."
+# 6. Install Python orchestrator
+section "Step 6/7  Installing Python orchestrator..."
+
+ORCHESTRATOR_DIR="${SCRIPT_DIR}/orchestrator"
+
+if [[ -d "${ORCHESTRATOR_DIR}" ]]; then
+  if command -v pip3 &>/dev/null && pip3 install --user -e "${ORCHESTRATOR_DIR}" 2>/dev/null; then
+    ok "Python orchestrator installed"
+  else
+    warn "Python orchestrator install failed (optional component)"
+  fi
+else
+  warn "Python orchestrator directory not found: ${ORCHESTRATOR_DIR}"
+fi
+
+# 7. Create config directory
+section "Step 7/7  Creating deep-research config directory..."
+
+CONFIG_DIR="${HOME}/.deep-research"
+CONFIG_PATH="${CONFIG_DIR}/config.json"
+mkdir -p "${CONFIG_DIR}"
+
+if [[ ! -f "${CONFIG_PATH}" ]]; then
+  CONFIG_PATH="${CONFIG_PATH}" \
+  GROK_API_URL="${GROK_API_URL}" \
+  GROK_API_KEY="${GROK_API_KEY}" \
+  TAVILY_API_URL="${TAVILY_API_URL}" \
+  TAVILY_API_KEY="${TAVILY_API_KEY}" \
+  EXA_API_KEY="${EXA_API_KEY}" \
+  python3 - <<'PYEOF'
+import json
+import os
+from pathlib import Path
+
+path = Path(os.environ["CONFIG_PATH"])
+config = {
+    "version": "1.2.0",
+    "models": {},
+    "search": {
+        "grok": {
+            "api_url": os.environ.get("GROK_API_URL", ""),
+            "api_key": os.environ.get("GROK_API_KEY", ""),
+            "tavily_api_url": os.environ.get("TAVILY_API_URL", "https://api.tavily.com"),
+            "tavily_api_key": os.environ.get("TAVILY_API_KEY", ""),
+        },
+        "exa": {
+            "api_key": os.environ.get("EXA_API_KEY", ""),
+        },
+    },
+    "features": {
+        "multi_model": False,
+        "scope_expansion": True,
+        "gemini_search": False,
+    },
+    "workspace": {
+        "base_dir": "workspace",
+    },
+}
+path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+PYEOF
+  ok "Created default config: ${CONFIG_PATH}"
+else
+  ok "Config already exists: ${CONFIG_PATH}"
+fi
+
+info "Run python3 -m deep_research setup for full multi-model configuration"
+
+# Disable CC native search (optional but recommended)
+section "Configuring Claude Code native search..."
 
 # CC_SETTINGS is the project-level settings file
 CC_SETTINGS="${SCRIPT_DIR}/.claude/settings.json"
@@ -284,7 +351,7 @@ if [[ ! -f "${CC_SETTINGS}" ]]; then
 fi
 
 # Use python3 to merge JSON (avoids jq dependency)
-python3 - <<'PYEOF'
+CC_SETTINGS="${CC_SETTINGS}" python3 - <<'PYEOF'
 import json, sys, os
 
 path = os.environ.get("CC_SETTINGS")

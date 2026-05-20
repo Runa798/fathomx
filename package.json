@@ -1,16 +1,18 @@
 {
   "name": "claude-deep-research",
-  "version": "1.1.0",
-  "description": "Claude Code deep research skill — Three-layer search orchestration (Grok + Exa + Browser) with intelligent routing and formatted reports",
+  "version": "1.2.0",
+  "description": "Multi-model deep research skill for Claude Code — MECE scope expansion, research personas, multi-model orchestration (Grok + Exa + Gemini + DeepSeek + GPT)",
   "author": "huangguaheye <huangguaheye@gmail.com>",
   "license": "MIT",
   "bin": {
-    "claude-deep-research": "./install.js"
+    "claude-deep-research": "./install.js",
+    "fathomx-setup": "./install.js"
   },
   "files": [
     "install.js",
     "install.sh",
     "skill/",
+    "orchestrator/",
     "mcp-setup/",
     ".env.example",
     "README.md",
