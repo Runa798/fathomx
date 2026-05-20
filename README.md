@@ -4,7 +4,9 @@
 
 **Claude Code 深度调研工具** — 三层搜索架构 + 智能编排 + 格式化报告
 
+[![Version](https://img.shields.io/github/v/release/Runa798/claude-deep-research?label=version)](https://github.com/Runa798/claude-deep-research/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub contributors](https://img.shields.io/github/contributors/Runa798/claude-deep-research)](https://github.com/Runa798/claude-deep-research/graphs/contributors)
 
 [English](README_EN.md) | 简体中文
 
@@ -242,6 +244,12 @@ rm .env
 本项目依赖多个优秀的开源项目和服务，详见 [ATTRIBUTION.md](ATTRIBUTION.md)。
 
 ---
+
+## 贡献者
+
+<a href="https://github.com/huangguaheye">
+  <img src="https://github.com/huangguaheye.png" width="50" height="50" alt="huangguaheye" style="border-radius: 50%;" />
+</a>
 
 ## 许可证
 

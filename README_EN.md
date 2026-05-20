@@ -4,7 +4,9 @@
 
 **Deep Research Skill for Claude Code** — Three-Layer Search Architecture + Smart Orchestration + Formatted Reports
 
+[![Version](https://img.shields.io/github/v/release/Runa798/claude-deep-research?label=version)](https://github.com/Runa798/claude-deep-research/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub contributors](https://img.shields.io/github/contributors/Runa798/claude-deep-research)](https://github.com/Runa798/claude-deep-research/graphs/contributors)
 
 [English](README_EN.md) | [简体中文](README.md)
 
@@ -243,6 +245,12 @@ rm .env
 This project depends on several excellent open-source projects and services. See [ATTRIBUTION.md](ATTRIBUTION.md) for full details.
 
 ---
+
+## Contributors
+
+<a href="https://github.com/huangguaheye">
+  <img src="https://github.com/huangguaheye.png" width="50" height="50" alt="huangguaheye" style="border-radius: 50%;" />
+</a>
 
 ## License
 
