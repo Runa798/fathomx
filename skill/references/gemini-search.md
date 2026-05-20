@@ -19,7 +19,7 @@ Gemini 3.1 Pro with Google Search grounding provides an additional search perspe
 Via the orchestrator:
 
 ```bash
-python3 -m deep_research run gemini_search \
+python3 -m fathomx run gemini_search \
   --workspace workspace/research-{date}-{slug} \
   --query "your search query" \
   --output "search/gemini-{topic-slug}.md"
@@ -44,7 +44,7 @@ Gemini Search results should be:
 ## Configuration
 
 Requires:
-- SEARCH tier configured in `~/.deep-research/config.json`
+- SEARCH tier configured in `~/.fathomx/config.json`
 - Google API key with access to Gemini API
 - `features.gemini_search: true`
 

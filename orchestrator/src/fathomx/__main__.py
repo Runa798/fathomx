@@ -1,4 +1,4 @@
-"""CLI entry point: python3 -m deep_research <command>."""
+"""CLI entry point: python3 -m fathomx <command>."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ def main() -> None:
     args = sys.argv[1:]
 
     if not args or args[0] in ("-h", "--help"):
-        print("Usage: python3 -m deep_research <command>")
+        print("Usage: python3 -m fathomx <command>")
         print()
         print("Commands:")
         print("  setup          Interactive TUI configuration")

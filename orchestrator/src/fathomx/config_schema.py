@@ -1,8 +1,8 @@
-"""Configuration schema — Pydantic v2 models for ~/.deep-research/config.json."""
+"""Configuration schema — Pydantic v2 models for ~/.fathomx/config.json."""
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ModelSpec(BaseModel):
@@ -13,6 +13,13 @@ class ModelSpec(BaseModel):
     max_tokens: int = Field(default=8192, ge=256, le=131072)
     temperature: float = Field(default=0.3, ge=0.0, le=2.0)
     enabled: bool = Field(default=True)
+
+    @field_validator("base_url")
+    @classmethod
+    def validate_base_url(cls, v: str) -> str:
+        if v and not v.startswith(("http://", "https://")):
+            raise ValueError(f"base_url must start with http:// or https://, got: {v[:50]}")
+        return v.rstrip("/")
 
 
 class GrokSearch(BaseModel):

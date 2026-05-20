@@ -1,6 +1,6 @@
 # Research Report Formatting Rules
 
-Formatting standards for all research output produced by the deep-research skill.
+Formatting standards for all research output produced by the FathomX skill.
 
 ---
 

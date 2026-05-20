@@ -1,6 +1,6 @@
 ---
-name: deep-research
-description: Multi-model deep research orchestrator for Claude Code. Routes queries through Grok Search MCP, Exa MCP, Gemini Search, and external analysis models. Applies product research methodology (MECE scope expansion, research personas, gap-driven iteration) to produce structured reports with source attribution.
+name: fathomx
+description: FathomX — Multi-model deep research orchestrator for Claude Code. Routes queries through Grok Search MCP, Exa MCP, Gemini Search, and external analysis models. Applies product research methodology (MECE scope expansion, research personas, gap-driven iteration) to produce structured reports with source attribution.
 version: 1.2.0
 author: Runa798
 license: MIT
@@ -9,7 +9,7 @@ metadata:
   related_skills: []
 ---
 
-# Deep Research Skill
+# FathomX — Deep Research Skill
 
 ## Trigger Keywords
 
@@ -35,7 +35,7 @@ Classify the research request before doing anything else:
 Check orchestrator availability:
 
 ```bash
-python3 -m deep_research config check
+python3 -m fathomx config check
 ```
 
 Parse the JSON output to determine:
@@ -121,10 +121,10 @@ Read `references/orchestrator-protocol.md` for full details.
 
 | Task | Tier | Command |
 |------|------|---------|
-| Extract structured data | FAST | `python3 -m deep_research run search_extract --workspace ... --dimension ...` |
-| Persona analysis | SMART | `python3 -m deep_research run analyze --workspace ... --persona ...` |
-| Compress findings | FAST | `python3 -m deep_research run compress --workspace ...` |
-| Gemini Search | SEARCH | `python3 -m deep_research run gemini_search --workspace ... --query ...` |
+| Extract structured data | FAST | `python3 -m fathomx run search_extract --workspace ... --dimension ...` |
+| Persona analysis | SMART | `python3 -m fathomx run analyze --workspace ... --persona ...` |
+| Compress findings | FAST | `python3 -m fathomx run compress --workspace ...` |
+| Gemini Search | SEARCH | `python3 -m fathomx run gemini_search --workspace ... --query ...` |
 
 ### Academic Search — Semantic Scholar
 

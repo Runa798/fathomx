@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "deep-research"
+name = "fathomx"
 version = "1.2.0"
-description = "Multi-model orchestrator for Claude Deep Research"
+description = "Multi-model orchestrator for FathomX deep research"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -24,10 +24,10 @@ dev = [
 ]
 
 [project.scripts]
-deep-research-setup = "deep_research.tui.app:run_setup"
+fathomx-setup = "fathomx.tui.app:run_setup"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/deep_research"]
+packages = ["src/fathomx"]
 
 [tool.ruff]
 target-version = "py310"

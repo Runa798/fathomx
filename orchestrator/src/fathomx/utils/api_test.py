@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from dataclasses import dataclass
 
 import httpx
@@ -14,6 +15,11 @@ class ValidationResult:
     ok: bool
     message: str
     latency_ms: int = 0
+
+
+def _sanitize_error(text: str) -> str:
+    """Remove potential API keys and tokens from error messages."""
+    return re.sub(r'(sk-|xai-|tvly-|AIza)[A-Za-z0-9_-]{10,}', '***', str(text)[:200])
 
 
 async def validate_openai_compat(provider: str, base_url: str, api_key: str, model: str) -> ValidationResult:
@@ -42,7 +48,7 @@ async def validate_openai_compat(provider: str, base_url: str, api_key: str, mod
     except httpx.RequestError as e:
         return ValidationResult(provider, False, f"Connection error: {e}")
     except Exception as e:
-        return ValidationResult(provider, False, str(e))
+        return ValidationResult(provider, False, _sanitize_error(str(e)))
 
 
 async def validate_gemini(api_key: str, model: str = "gemini-3.1-pro") -> ValidationResult:
@@ -63,7 +69,7 @@ async def validate_gemini(api_key: str, model: str = "gemini-3.1-pro") -> Valida
     except httpx.RequestError as e:
         return ValidationResult("google", False, f"Connection error: {e}")
     except Exception as e:
-        return ValidationResult("google", False, str(e))
+        return ValidationResult("google", False, _sanitize_error(str(e)))
 
 
 async def validate_exa(api_key: str) -> ValidationResult:
@@ -82,7 +88,7 @@ async def validate_exa(api_key: str) -> ValidationResult:
     except httpx.RequestError as e:
         return ValidationResult("exa", False, f"Connection error: {e}")
     except Exception as e:
-        return ValidationResult("exa", False, str(e))
+        return ValidationResult("exa", False, _sanitize_error(str(e)))
 
 
 async def validate_all(config_dict: dict) -> list[ValidationResult]:

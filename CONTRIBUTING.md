@@ -1,4 +1,4 @@
-# Contributing to Claude Deep Research
+# Contributing to FathomX
 
 Thanks for your interest in contributing! Here's how to get started.
 
@@ -25,15 +25,17 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 ## Project Structure
 
 ```
-claude-deep-research/
+fathomx/
 ├── skill/              # Claude Code Skill (core)
 │   ├── SKILL.md        # Skill manifest and workflow
-│   ├── references/     # Strategy and format guides
+│   ├── references/     # Strategy, methodology, and format guides
 │   └── templates/      # Report templates
+├── orchestrator/       # Python multi-model orchestrator
+│   ├── src/fathomx/    # Source code
+│   └── tests/          # Unit tests
 ├── mcp-setup/          # MCP registration scripts
-├── shared-keys/        # API key management (private)
 ├── install.sh          # Main installer
-└── docs/               # Documentation and examples
+└── install.js          # npx installer
 ```
 
 ## What to Contribute

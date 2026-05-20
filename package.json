@@ -1,11 +1,11 @@
 {
-  "name": "claude-deep-research",
+  "name": "fathomx",
   "version": "1.2.0",
-  "description": "Multi-model deep research skill for Claude Code — MECE scope expansion, research personas, multi-model orchestration (Grok + Exa + Gemini + DeepSeek + GPT)",
+  "description": "FathomX — Multi-model deep research skill for Claude Code. MECE scope expansion, research personas, multi-model orchestration (Grok + Exa + Gemini + DeepSeek + GPT)",
   "author": "huangguaheye <huangguaheye@gmail.com>",
   "license": "MIT",
   "bin": {
-    "claude-deep-research": "./install.js",
+    "fathomx": "./install.js",
     "fathomx-setup": "./install.js"
   },
   "files": [
@@ -30,6 +30,7 @@
   "keywords": [
     "claude-code",
     "claude-code-skill",
+    "fathomx",
     "deep-research",
     "mcp",
     "ai-search",

@@ -9,9 +9,9 @@ SRC_DIR = Path(__file__).resolve().parents[1] / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from deep_research.config import save_config  # noqa: E402
-from deep_research.config_schema import Config, ModelSpec  # noqa: E402
-from deep_research.workspace import Workspace  # noqa: E402
+from fathomx.config import save_config  # noqa: E402
+from fathomx.config_schema import Config, ModelSpec  # noqa: E402
+from fathomx.workspace import Workspace  # noqa: E402
 
 
 @pytest.fixture

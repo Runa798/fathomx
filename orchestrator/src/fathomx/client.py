@@ -49,7 +49,7 @@ class ModelClient:
         response_format: dict[str, Any] | None = None,
     ) -> str:
         spec = self._get_spec(tier)
-        url = f"{spec.base_url.rstrip('/')}/v1/chat/completions"
+        url = f"{spec.base_url}/v1/chat/completions"
         headers = {"Authorization": f"Bearer {spec.api_key}", "Content-Type": "application/json"}
 
         payload: dict[str, Any] = {

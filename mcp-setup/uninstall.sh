@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-SKILL_TARGET="${HOME}/.claude/skills/deep-research"
+SKILL_TARGET="${HOME}/.claude/skills/fathomx"
 
 # ─── Colors ──────────────────────────────────────────────────────────────────
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
@@ -14,7 +14,7 @@ ok()   { echo -e "${GREEN}[OK]${RESET}    $*"; }
 warn() { echo -e "${YELLOW}[WARN]${RESET}  $*"; }
 info() { echo -e "${CYAN}[INFO]${RESET}  $*"; }
 
-echo -e "${BOLD}=== Uninstalling claude-deep-research ===${RESET}"
+echo -e "${BOLD}=== Uninstalling FathomX ===${RESET}"
 echo
 
 # ─── Remove GrokSearch MCP ───────────────────────────────────────────────────
@@ -53,4 +53,4 @@ echo "  MCP registrations cleared (verify with: claude mcp list)"
 echo "  Skill directory removed:  ${SKILL_TARGET}"
 echo
 echo "  Note: .env and shared-keys/ were NOT removed."
-echo "  To fully clean up: rm -rf /path/to/claude-deep-research"
+echo "  To fully clean up: rm -rf /path/to/fathomx"

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from deep_research.config import ConfigError, load_config, save_config
-from deep_research.config_schema import Config, ModelSpec
+from fathomx.config import ConfigError, load_config, save_config
+from fathomx.config_schema import Config, ModelSpec
 
 
 def test_default_config(tmp_path: Path) -> None:

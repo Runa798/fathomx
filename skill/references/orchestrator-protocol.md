@@ -9,14 +9,14 @@ This file defines the exact protocol for Claude (the running model in Claude Cod
 Before any orchestrator call, verify availability:
 
 ```bash
-python3 -m deep_research config check
+python3 -m fathomx config check
 ```
 
 This returns JSON:
 ```json
 {
   "ok": true,
-  "config_path": "/home/user/.deep-research/config.json",
+  "config_path": "/home/user/.fathomx/config.json",
   "config_exists": true,
   "available_tiers": ["FAST", "SMART", "SEARCH"],
   "multi_model": true,
@@ -35,13 +35,13 @@ This returns JSON:
 
 All commands follow the pattern:
 ```bash
-python3 -m deep_research run <task> --workspace <path> [--args]
+python3 -m fathomx run <task> --workspace <path> [--args]
 ```
 
 ### search_extract — Extract structured data (FAST tier)
 
 ```bash
-python3 -m deep_research run search_extract \
+python3 -m fathomx run search_extract \
   --workspace workspace/research-2026-05-20-topic-slug \
   --dimension "competitive-landscape" \
   --context "Research on X product market" \
@@ -57,7 +57,7 @@ python3 -m deep_research run search_extract \
 ### analyze — Run persona analysis (SMART tier)
 
 ```bash
-python3 -m deep_research run analyze \
+python3 -m fathomx run analyze \
   --workspace workspace/research-2026-05-20-topic-slug \
   --persona market-analyst \
   --context "Research on X product market"
@@ -74,7 +74,7 @@ python3 -m deep_research run analyze \
 ### compress — Compress findings (FAST tier)
 
 ```bash
-python3 -m deep_research run compress \
+python3 -m fathomx run compress \
   --workspace workspace/research-2026-05-20-topic-slug \
   --context "Research on X product market"
 ```
@@ -88,7 +88,7 @@ python3 -m deep_research run compress \
 ### gemini_search — Grounded search (SEARCH tier)
 
 ```bash
-python3 -m deep_research run gemini_search \
+python3 -m fathomx run gemini_search \
   --workspace workspace/research-2026-05-20-topic-slug \
   --query "2026 AI fitness market trends China" \
   --output "search/gemini-market-trends.md"
@@ -139,7 +139,7 @@ Never let an orchestrator failure block the research. Always fall back gracefull
 ## Typical Deep Research Orchestration
 
 ```
-1. python3 -m deep_research config check
+1. python3 -m fathomx config check
    → Determine available tiers
 
 2. Claude: Apply scope expansion (methodology.md)
@@ -149,20 +149,20 @@ Never let an orchestrator failure block the research. Always fall back gracefull
    → Write workspace/search/raw-{dim}.md for each dimension
 
 4. For each dimension with raw data:
-   python3 -m deep_research run search_extract --dimension {dim} ...
+   python3 -m fathomx run search_extract --dimension {dim} ...
    → workspace/search/{dim}.md
 
 5. (If SEARCH tier available):
-   python3 -m deep_research run gemini_search --query "..." --output "search/gemini-{topic}.md"
+   python3 -m fathomx run gemini_search --query "..." --output "search/gemini-{topic}.md"
 
 6. For each persona:
-   python3 -m deep_research run analyze --persona {name} ...
+   python3 -m fathomx run analyze --persona {name} ...
    → workspace/analysis/{name}.md
 
 7. Claude: Read all files, apply gap detection (methodology.md §3)
    → If gaps: targeted supplementary searches → re-extract
 
-8. python3 -m deep_research run compress ...
+8. python3 -m fathomx run compress ...
    → workspace/compressed/findings-summary.md
 
 9. Claude: Read findings-summary.md + all analysis files

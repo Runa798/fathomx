@@ -79,7 +79,7 @@ jobs:
         run: ruff check src/ tests/
 
       - name: Type check with mypy
-        run: mypy src/deep_research/ --ignore-missing-imports
+        run: mypy src/fathomx/ --ignore-missing-imports
 
       - name: Run tests
         run: pytest tests/ -v

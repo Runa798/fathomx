@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from deep_research.utils.slug import sanitize_slug
-from deep_research.workspace import Workspace
+from fathomx.utils.slug import sanitize_slug
+from fathomx.workspace import Workspace
 
 
 def test_create_dirs(tmp_workspace: Workspace) -> None:

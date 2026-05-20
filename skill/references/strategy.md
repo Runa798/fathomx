@@ -1,6 +1,6 @@
 # Research Execution Strategy
 
-Detailed strategy for the deep-research skill. Read this file before executing any research task.
+Detailed strategy for the FathomX research skill. Read this file before executing any research task.
 
 This is the v1.2.0 strategy with multi-model orchestration support. When orchestrator is unavailable, each phase falls back to Claude-only execution (v1.1.0 compatible).
 
@@ -11,7 +11,7 @@ This is the v1.2.0 strategy with multi-model orchestration support. When orchest
 Before any research, run:
 
 ```bash
-python3 -m deep_research config check
+python3 -m fathomx config check
 ```
 
 Parse the JSON output. Key fields:
@@ -60,7 +60,7 @@ Execute searches in parallel:
 - **Grok**: `web_search` with `extra_sources=5` per sub-query
 - **Exa**: `web_search_exa` or `web_search_advanced_exa` for semantic discovery
 - **Exa company**: `company_research_exa` for each identified competitor (DO NOT skip this for competitive research)
-- **(If gemini_search available)**: `python3 -m deep_research run gemini_search --workspace {session-dir-or-temp} --query "..." --output "search/gemini-{topic}.md"`
+- **(If gemini_search available)**: `python3 -m fathomx run gemini_search --workspace {session-dir-or-temp} --query "..." --output "search/gemini-{topic}.md"`
 
 Collect all `session_id` values for source retrieval.
 
@@ -68,7 +68,7 @@ Collect all `session_id` values for source retrieval.
 
 If `multi_model: true` and FAST tier is available:
 1. Write raw search results to `workspace/search/raw-{dimension}.md`
-2. Call orchestrator: `python3 -m deep_research run search_extract --dimension {dim} ...`
+2. Call orchestrator: `python3 -m fathomx run search_extract --dimension {dim} ...`
 3. Read extracted results from `workspace/search/{dim}.md`
 
 If FAST tier unavailable: Claude synthesizes directly from raw search results.
@@ -154,7 +154,7 @@ Write raw results to `{session-dir}/search/raw-{dimension}.md` for each dimensio
 **Orchestrator extraction (if FAST tier available)**:
 For each dimension with raw data:
 ```bash
-python3 -m deep_research run search_extract \
+python3 -m fathomx run search_extract \
   --workspace {session-dir} \
   --dimension {dimension-name} \
   --context "{brief topic context}"
@@ -166,7 +166,7 @@ If FAST tier unavailable: Claude extracts directly (higher cost, same quality).
 
 **Gemini supplementary search (if SEARCH tier available)**:
 ```bash
-python3 -m deep_research run gemini_search \
+python3 -m fathomx run gemini_search \
   --workspace {session-dir} \
   --query "{dimension-specific query}" \
   --output "search/gemini-{dimension}.md"
@@ -178,9 +178,9 @@ python3 -m deep_research run gemini_search \
 
 **Orchestrator persona analysis (if SMART tier available)**:
 ```bash
-python3 -m deep_research run analyze --persona market-analyst --workspace {session-dir} --context "..."
-python3 -m deep_research run analyze --persona ci-analyst --workspace {session-dir} --context "..."
-python3 -m deep_research run analyze --persona product-strategist --workspace {session-dir} --context "..."
+python3 -m fathomx run analyze --persona market-analyst --workspace {session-dir} --context "..."
+python3 -m fathomx run analyze --persona ci-analyst --workspace {session-dir} --context "..."
+python3 -m fathomx run analyze --persona product-strategist --workspace {session-dir} --context "..."
 ```
 
 This calls the SMART model (GPT) with embedded analytical frameworks. Output: `{session-dir}/analysis/{persona}.md`.
@@ -209,7 +209,7 @@ Maximum 2 gap-fill iterations.
 
 **Compression (if orchestrator available)**:
 ```bash
-python3 -m deep_research run compress --workspace {session-dir} --context "..."
+python3 -m fathomx run compress --workspace {session-dir} --context "..."
 ```
 
 Output: `{session-dir}/compressed/findings-summary.md` — all findings compressed to ~55% token retention, preserving reasoning chains and contradictions.

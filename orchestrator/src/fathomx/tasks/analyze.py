@@ -79,6 +79,11 @@ async def _run(workspace: Workspace, persona: str, context: str) -> None:
 
     combined = "\n\n---\n\n".join(contents)
 
+    max_input_chars = 400_000
+    if len(combined) > max_input_chars:
+        workspace.log_error("analyze", f"Input too large ({len(combined)} chars), truncating to {max_input_chars}")
+        combined = combined[:max_input_chars]
+
     messages = [
         {"role": "system", "content": PERSONA_PROMPTS[persona]},
         {"role": "user", "content": f"Research context: {context}\n\n---\n\nExtracted research findings across all dimensions:\n\n{combined}"},

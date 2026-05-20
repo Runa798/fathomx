@@ -8,7 +8,7 @@ from pathlib import Path
 
 from .config_schema import Config
 
-CONFIG_DIR = Path.home() / ".deep-research"
+CONFIG_DIR = Path.home() / ".fathomx"
 CONFIG_PATH = CONFIG_DIR / "config.json"
 
 
@@ -42,7 +42,7 @@ def save_config(config: Config, path: Path | None = None) -> Path:
 
 
 def check_config() -> dict[str, object]:
-    """Return a status dict for `python3 -m deep_research config check`."""
+    """Return a status dict for `python3 -m fathomx config check`."""
     try:
         config = load_config()
     except ConfigError as e:

@@ -43,6 +43,12 @@ async def _run(workspace: Workspace, context: str) -> None:
         sys.exit(1)
 
     combined = "\n\n---\n\n".join(sections)
+
+    max_input_chars = 400_000
+    if len(combined) > max_input_chars:
+        workspace.log_error("compress", f"Input too large ({len(combined)} chars), truncating to {max_input_chars}")
+        combined = combined[:max_input_chars]
+
     input_tokens_approx = len(combined) // 4
 
     messages = [

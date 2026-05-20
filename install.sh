@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Install claude-deep-research MCP tools and skill
+# install.sh — Install FathomX MCP tools and skill
 # Idempotent: safe to run multiple times.
 # Usage:
 #   ./install.sh             Install everything
@@ -16,10 +16,10 @@ if [ -z "${BASH_VERSION:-}" ]; then
 fi
 
 # ─── Platform Detection ─────────────────────────────────────────────────────
-# Override via: CLAUDE_DEEP_RESEARCH_PLATFORM=codex ./install.sh
+# Override via: FATHOMX_PLATFORM=codex ./install.sh
 detect_platform() {
-  if [[ -n "${CLAUDE_DEEP_RESEARCH_PLATFORM:-}" ]]; then
-    PLATFORM="${CLAUDE_DEEP_RESEARCH_PLATFORM}"
+  if [[ -n "${FATHOMX_PLATFORM:-}" ]]; then
+    PLATFORM="${FATHOMX_PLATFORM}"
   elif command -v claude &>/dev/null; then
     PLATFORM="claude-code"
   elif command -v opencode &>/dev/null; then
@@ -31,10 +31,10 @@ detect_platform() {
   fi
 
   case "${PLATFORM}" in
-    claude-code) SKILL_TARGET="${HOME}/.claude/skills/deep-research" ;;
-    opencode)    SKILL_TARGET="${HOME}/.claude/skills/deep-research" ;;
-    codex)       SKILL_TARGET="${CODEX_HOME:-${HOME}/.codex}/skills/deep-research" ;;
-    *)           SKILL_TARGET="${HOME}/.claude/skills/deep-research" ;;
+    claude-code) SKILL_TARGET="${HOME}/.claude/skills/fathomx" ;;
+    opencode)    SKILL_TARGET="${HOME}/.claude/skills/fathomx" ;;
+    codex)       SKILL_TARGET="${CODEX_HOME:-${HOME}/.codex}/skills/fathomx" ;;
+    *)           SKILL_TARGET="${HOME}/.claude/skills/fathomx" ;;
   esac
 }
 
@@ -72,7 +72,7 @@ EXA_API_KEY="${EXA_API_KEY:-}"
 
 # ─── Uninstall ────────────────────────────────────────────────────────────────
 uninstall() {
-  section "=== Uninstalling claude-deep-research ==="
+  section "=== Uninstalling FathomX ==="
 
   info "Removing GrokSearch MCP registration..."
   if claude mcp remove grok-search 2>/dev/null; then
@@ -110,7 +110,7 @@ if [[ "${1:-}" == "--uninstall" ]]; then
 fi
 
 # ─── Install ──────────────────────────────────────────────────────────────────
-section "=== Installing claude-deep-research ==="
+section "=== Installing FathomX ==="
 
 # 1. Prerequisites
 section "Step 1/7  Checking prerequisites..."
@@ -243,7 +243,7 @@ else
 fi
 
 # 5. Install skill
-section "Step 5/7  Installing deep-research skill..."
+section "Step 5/7  Installing FathomX skill..."
 
 SKILL_SOURCE="${SCRIPT_DIR}/skill"
 
@@ -288,9 +288,9 @@ else
 fi
 
 # 7. Create config directory
-section "Step 7/7  Creating deep-research config directory..."
+section "Step 7/7  Creating FathomX config directory..."
 
-CONFIG_DIR="${HOME}/.deep-research"
+CONFIG_DIR="${HOME}/.fathomx"
 CONFIG_PATH="${CONFIG_DIR}/config.json"
 mkdir -p "${CONFIG_DIR}"
 
@@ -337,7 +337,7 @@ else
   ok "Config already exists: ${CONFIG_PATH}"
 fi
 
-info "Run python3 -m deep_research setup for full multi-model configuration"
+info "Run python3 -m fathomx setup for full multi-model configuration"
 
 # Disable CC native search (optional but recommended)
 section "Configuring Claude Code native search..."

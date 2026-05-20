@@ -84,9 +84,9 @@ Use this persona for Dimensions 3 (User Jobs) and 5 (Strategic Position).
 
 **Deep tier with multi-model**: Call the orchestrator to run persona analyses on external models:
 ```bash
-python3 -m deep_research run analyze --persona market-analyst --workspace {session-dir} --context "{topic}"
-python3 -m deep_research run analyze --persona ci-analyst --workspace {session-dir} --context "{topic}"
-python3 -m deep_research run analyze --persona product-strategist --workspace {session-dir} --context "{topic}"
+python3 -m fathomx run analyze --persona market-analyst --workspace {session-dir} --context "{topic}"
+python3 -m fathomx run analyze --persona ci-analyst --workspace {session-dir} --context "{topic}"
+python3 -m fathomx run analyze --persona product-strategist --workspace {session-dir} --context "{topic}"
 ```
 These produce separate analysis files in `workspace/analysis/` that Claude reads for final synthesis.
 
