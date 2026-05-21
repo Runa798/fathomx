@@ -24,7 +24,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## Project Structure
 
-```
+```text
 fathomx/
 ├── skill/              # Claude Code Skill (core)
 │   ├── SKILL.md        # Skill manifest and workflow

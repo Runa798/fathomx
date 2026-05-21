@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-05-20
 
 ### Added
+
 - Multi-model orchestrator (Python): delegate extraction to FAST tier (DeepSeek), analysis to SMART tier (GPT), search to SEARCH tier (Gemini)
 - Product research methodology: MECE 6-dimension scope expansion, 3 research personas (Market Analyst, CI Analyst, Product Strategist), gap-driven iteration
 - TUI onboarding: interactive Textual-based setup for model tiers, search providers, and feature toggles
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API key sanitization in validation error messages
 
 ### Changed
+
 - **Renamed project to FathomX** — npm package, Python package, config directory, skill name all unified
 - SKILL.md rewritten for multi-model workflow with graceful degradation
 - strategy.md restructured into 4-phase orchestrator-integrated flow
@@ -32,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-05-20
 
 ### Added
+
 - Source credibility scoring system (A–E ratings) in report templates
 - Disk checkpointing for deep research sessions (resumable research)
 - `npx claude-deep-research` one-command installer
@@ -40,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CHANGELOG.md, CONTRIBUTING.md, GitHub issue templates, CI workflow
 
 ### Changed
+
 - Updated report-format.md with source-level credibility assessment
 - Enhanced strategy.md with disk persistence and academic search phases
 - Expanded install.sh with platform detection for OpenCode/Codex
@@ -47,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-05-18
 
 ### Added
+
 - Three-layer search architecture (API → Browser → Manual)
 - GrokSearch MCP integration (AI search + Tavily extraction)
 - Exa MCP integration (semantic search + entity discovery)
