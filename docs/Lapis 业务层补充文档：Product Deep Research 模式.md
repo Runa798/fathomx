@@ -1,11 +1,5 @@
 # Lapis 业务层补充文档：Product Deep Research 模式
 
-文档版本：v1.0  
-创建日期：2026-05-21  
-适用项目：Lapis Research Agent  
-适用对象：产品专家、运营专家、战略分析人员、业务负责人  
-合入位置：`skills/deep-research.md`、`prompts/layer1/`、`prompts/layer2/`、报告 schema 与最终报告模板  
-
 ## 1. 业务定位
 
 Lapis 的业务层目标是支持产品专家和运营专家完成深度产品调研。该模式不以生成通用市场报告为目标，而以形成**可用于产品决策、功能规划、增长判断和 PRD 前置研究的结构化结论**为目标。
