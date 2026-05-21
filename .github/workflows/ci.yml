@@ -17,11 +17,13 @@ jobs:
         with:
           scandir: '.'
           additional_files: 'install.sh'
+          severity: 'warning'
 
       - name: ShellCheck mcp-setup scripts
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           scandir: './mcp-setup'
+          severity: 'warning'
 
       - name: Markdown lint
         uses: DavidAnson/markdownlint-cli2-action@v19

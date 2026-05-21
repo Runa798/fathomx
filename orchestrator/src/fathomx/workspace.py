@@ -48,7 +48,8 @@ class Workspace:
         content = self.read("state.json")
         if content is None:
             return self._default_state()
-        return json.loads(content)
+        result: dict[str, object] = json.loads(content)
+        return result
 
     def save_state(self, state: dict[str, object]) -> None:
         state["updatedAt"] = datetime.now().isoformat()

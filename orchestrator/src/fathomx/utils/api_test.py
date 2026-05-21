@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import re
 from dataclasses import dataclass
+from typing import Any
 
 import httpx
 
@@ -91,7 +92,7 @@ async def validate_exa(api_key: str) -> ValidationResult:
         return ValidationResult("exa", False, _sanitize_error(str(e)))
 
 
-async def validate_all(config_dict: dict) -> list[ValidationResult]:
+async def validate_all(config_dict: dict[str, Any]) -> list[ValidationResult]:
     tasks = []
     models = config_dict.get("models", {})
 

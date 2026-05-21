@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from typing import Any
 
 import httpx
 
@@ -58,7 +59,7 @@ async def _run(workspace: Workspace, query: str, output: str) -> None:
     workspace.write(output, md)
 
 
-def _extract_text(data: dict) -> str:
+def _extract_text(data: dict[str, Any]) -> str:
     try:
         candidates = data.get("candidates", [])
         if not candidates:
@@ -69,7 +70,7 @@ def _extract_text(data: dict) -> str:
         return ""
 
 
-def _extract_sources(data: dict) -> list[dict[str, str]]:
+def _extract_sources(data: dict[str, Any]) -> list[dict[str, str]]:
     sources: list[dict[str, str]] = []
     try:
         metadata = data.get("candidates", [{}])[0].get("groundingMetadata", {})

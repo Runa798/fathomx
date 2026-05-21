@@ -87,7 +87,7 @@ class ModelClient:
                 choices = data.get("choices", [])
                 if not choices:
                     raise ModelClientError(tier, "Empty choices in response")
-                content = choices[0].get("message", {}).get("content")
+                content: str | None = choices[0].get("message", {}).get("content")
                 if content is None:
                     raise ModelClientError(tier, "No content in response message")
                 return content
