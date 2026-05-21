@@ -56,6 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - One-command installation via `install.sh`
 - Bilingual documentation (Chinese + English)
 
-[1.2.0]: https://github.com/Runa798/claude-deep-research/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/Runa798/claude-deep-research/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/Runa798/claude-deep-research/releases/tag/v1.0.0
+[1.2.0]: https://github.com/Runa798/fathomx/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/Runa798/fathomx/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/Runa798/fathomx/releases/tag/v1.0.0

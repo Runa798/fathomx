@@ -4,9 +4,9 @@
 
 **Multi-Model Deep Research Tool** — MECE Scope Expansion + Research Personas + Multi-Model Orchestration + Formatted Reports
 
-[![Version](https://img.shields.io/github/v/release/Runa798/claude-deep-research?label=version)](https://github.com/Runa798/claude-deep-research/releases)
+[![Version](https://img.shields.io/github/v/release/Runa798/fathomx?label=version)](https://github.com/Runa798/fathomx/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![GitHub contributors](https://img.shields.io/github/contributors/Runa798/claude-deep-research)](https://github.com/Runa798/claude-deep-research/graphs/contributors)
+[![GitHub contributors](https://img.shields.io/github/contributors/Runa798/fathomx)](https://github.com/Runa798/fathomx/graphs/contributors)
 
 [English](README_EN.md) | [简体中文](README.md)
 
@@ -81,7 +81,7 @@ npx fathomx
 ### Clone and Install
 
 ```bash
-git clone https://github.com/Runa798/claude-deep-research.git
+git clone https://github.com/Runa798/fathomx.git
 cd claude-deep-research
 ./install.sh
 ```

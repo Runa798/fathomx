@@ -55,7 +55,7 @@ fathomx/
 
 ## Reporting Issues
 
-Use the [GitHub issue templates](https://github.com/Runa798/claude-deep-research/issues/new/choose) to report bugs or request features.
+Use the [GitHub issue templates](https://github.com/Runa798/fathomx/issues/new/choose) to report bugs or request features.
 
 ## License
 

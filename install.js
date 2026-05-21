@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 
-const REPO_URL = "https://github.com/Runa798/claude-deep-research.git";
+const REPO_URL = "https://github.com/Runa798/fathomx.git";
 const CLONE_DIR = path.join(os.tmpdir(), "fathomx-install");
 
 function run(cmd, opts = {}) {

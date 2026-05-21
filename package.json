@@ -21,11 +21,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Runa798/claude-deep-research.git"
+    "url": "https://github.com/Runa798/fathomx.git"
   },
-  "homepage": "https://github.com/Runa798/claude-deep-research",
+  "homepage": "https://github.com/Runa798/fathomx",
   "bugs": {
-    "url": "https://github.com/Runa798/claude-deep-research/issues"
+    "url": "https://github.com/Runa798/fathomx/issues"
   },
   "keywords": [
     "claude-code",

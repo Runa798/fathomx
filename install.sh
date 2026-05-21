@@ -136,11 +136,11 @@ if [[ "${PLATFORM}" == "claude-code" ]]; then
 elif [[ "${PLATFORM}" == "opencode" ]]; then
   ok "Platform: OpenCode"
   warn "MCP auto-registration not supported for OpenCode — you'll need to configure MCP servers manually"
-  warn "See: https://github.com/Runa798/claude-deep-research#opencode-setup"
+  warn "See: https://github.com/Runa798/fathomx#opencode-setup"
 elif [[ "${PLATFORM}" == "codex" ]]; then
   ok "Platform: Codex"
   warn "MCP auto-registration not supported for Codex — you'll need to configure MCP servers manually"
-  warn "See: https://github.com/Runa798/claude-deep-research#codex-setup"
+  warn "See: https://github.com/Runa798/fathomx#codex-setup"
 else
   warn "No supported AI coding IDE found (claude / opencode / codex)"
   warn "Installing skill files only — configure MCP servers manually"
