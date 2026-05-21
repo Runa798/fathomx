@@ -99,6 +99,7 @@ python3 -m fathomx setup
 ```
 
 TUI 会引导你配置：
+
 - **FAST 层** — DeepSeek / 其他 OpenAI 兼容模型（数据提取）
 - **SMART 层** — GPT / 其他 OpenAI 兼容模型（分析）
 - **SEARCH 层** — Gemini 3.1 Pro（搜索补充）

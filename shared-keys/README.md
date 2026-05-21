@@ -15,19 +15,19 @@ shared-keys/
 ## 使用方法
 
 1. 通过私密渠道获取 `tavily-pool.md` 和 `grok2api.md`，放入本目录
-2. 根据文件内容，将对应 key 填入项目根目录的 `.env` 文件：
+1. 根据文件内容，将对应 key 填入项目根目录的 `.env` 文件：
 
-```env
-GROK_API_URL=https://grok.heyerice33.win/v1
-GROK_API_KEY=<从 grok2api.md 获取>
+   ```env
+   GROK_API_URL=https://grok.heyerice33.win/v1
+   GROK_API_KEY=<从 grok2api.md 获取>
 
-TAVILY_API_URL=https://tavily.heyerice33.win
-TAVILY_API_KEY=<从 tavily-pool.md 获取>
+   TAVILY_API_URL=https://tavily.heyerice33.win
+   TAVILY_API_KEY=<从 tavily-pool.md 获取>
 
-EXA_API_KEY=<可选，自行申请>
-```
+   EXA_API_KEY=<可选，自行申请>
+   ```
 
-3. 运行 `./install.sh` 安装
+1. 运行 `./install.sh` 安装
 
 ## 可用服务
 

@@ -99,6 +99,7 @@ python3 -m fathomx setup
 ```
 
 The TUI guides you through configuring:
+
 - **FAST tier** — DeepSeek / other OpenAI-compatible model (data extraction)
 - **SMART tier** — GPT / other OpenAI-compatible model (analysis)
 - **SEARCH tier** — Gemini 3.1 Pro (supplementary search)
