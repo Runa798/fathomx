@@ -1,13 +1,4 @@
-.env
-*.pyc
-__pycache__/
-node_modules/
-.DS_Store
-.ccg/
-workspace/
-.venv/
-.pytest_cache/
-.ruff_cache/
-*.egg-info/
-dist/
-build/
+/target
+.ccg
+.claude
+.context
