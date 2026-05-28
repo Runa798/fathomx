@@ -1,4 +1,6 @@
-use std::collections::{BTreeSet, VecDeque};
+mod support;
+
+use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -7,76 +9,28 @@ use std::thread;
 use std::time::Duration;
 
 use async_trait::async_trait;
-use lapis_core::error::{Error, Result};
-use lapis_core::mcp::LapisMcpServer;
-use lapis_core::model::provider::ModelProvider;
-use lapis_core::model::service::ModelService;
-use lapis_core::orchestrator::workflow::deep_research;
-use lapis_core::schema::budget::{AgentBudget, BudgetConfig, ResearchBudget};
-use lapis_core::schema::limit::Limit;
-use lapis_core::schema::mcp::{ToolEnvelope, ToolErrorCode, ToolStatus};
-use lapis_core::schema::model::{ModelInputItem, ModelRequest, ModelResponse, ModelToolCall};
-use lapis_core::schema::policy::{
-    EvidencePolicy, ExecutionPolicy, ModelPolicy, OutputPolicy, SearchPolicy, ToolName,
-};
-use lapis_core::schema::report::{
-    AspectReport, AspectResearchResult, Confidence, Evidence, Finding, FindingType, Importance,
-    OpenQuestion,
-};
-use lapis_core::schema::research::{
-    AspectResearchRequest, AspectResearchTask, AspectSpec, DeepResearchRequest, ResearchContext,
-};
-use lapis_core::schema::search::{SearchRequest, SearchResponse, SearchResult};
-use lapis_core::search::provider::SearchProvider;
-use lapis_core::search::service::SearchService;
+use lapis_error::{Error, Result};
+use lapis_mcp::LapisMcpServer;
+use lapis_mcp::{ToolEnvelope, ToolErrorCode, ToolStatus};
+use lapis_model::ModelProvider;
+use lapis_model::ModelService;
+use lapis_model::{ModelRequest, ModelResponse};
+use lapis_workflow::AspectResearchResult;
+use lapis_workflow::Limit;
+use lapis_workflow::{AgentBudget, BudgetConfig, ResearchBudget};
 use rmcp::ServerHandler;
 use rmcp::handler::server::wrapper::Parameters;
 use rmcp::schemars::schema_for;
 use serde_json::json;
-
-fn unlimited_budget_config() -> BudgetConfig {
-    BudgetConfig {
-        research: ResearchBudget::unlimited(),
-        per_agent: AgentBudget::unlimited(),
-    }
-}
-
-struct AdaptiveModelProvider {
-    failing_aspects: BTreeSet<String>,
-    calls: Arc<AtomicUsize>,
-}
+use support::research::{
+    Services, aspect_field, aspect_request, deep_request, final_response,
+    first_evidence_from_tool_output, medium_result_json, services, static_search_service,
+    tool_response, unlimited_budget_config,
+};
 
 struct SequenceModelProvider {
     calls: Arc<AtomicUsize>,
     responses: Mutex<VecDeque<ModelResponse>>,
-}
-
-#[async_trait]
-impl ModelProvider for AdaptiveModelProvider {
-    fn name(&self) -> &'static str {
-        "model"
-    }
-
-    async fn complete(&self, request: ModelRequest) -> Result<ModelResponse> {
-        self.calls.fetch_add(1, Ordering::SeqCst);
-        let aspect_id = aspect_field(&request.input, "Aspect ID");
-        let aspect_name = aspect_field(&request.input, "Aspect name");
-
-        if !has_tool_output(&request.input) {
-            return Ok(tool_response());
-        }
-
-        if self.failing_aspects.contains(&aspect_id) {
-            return Ok(final_response("{}".to_owned()));
-        }
-
-        let evidence = first_evidence_from_tool_output(&request.input);
-        Ok(final_response(result_json(
-            &aspect_id,
-            &aspect_name,
-            evidence,
-        )))
-    }
 }
 
 #[async_trait]
@@ -98,69 +52,13 @@ impl ModelProvider for SequenceModelProvider {
         if response.content.as_deref() == Some("__RESULT_FROM_TOOL_OUTPUT__") {
             let aspect_id = aspect_field(&request.input, "Aspect ID");
             let aspect_name = aspect_field(&request.input, "Aspect name");
-            response.content = Some(result_json(
+            response.content = Some(medium_result_json(
                 &aspect_id,
                 &aspect_name,
                 first_evidence_from_tool_output(&request.input),
             ));
         }
         Ok(response)
-    }
-}
-
-struct StaticSearchProvider {
-    calls: Arc<AtomicUsize>,
-}
-
-#[async_trait]
-impl SearchProvider for StaticSearchProvider {
-    fn name(&self) -> &'static str {
-        "searcher"
-    }
-
-    async fn search(&self, _request: SearchRequest) -> Result<SearchResponse> {
-        self.calls.fetch_add(1, Ordering::SeqCst);
-        Ok(SearchResponse {
-            provider: "searcher".to_owned(),
-            results: vec![SearchResult {
-                title: "Shared Source".to_owned(),
-                url: Some("https://example.test/shared".to_owned()),
-                snippet: "shared snippet".to_owned(),
-                summary: Some("shared summary".to_owned()),
-                published_at: None,
-            }],
-        })
-    }
-}
-
-struct Services {
-    model: ModelService,
-    search: SearchService,
-    model_calls: Arc<AtomicUsize>,
-    search_calls: Arc<AtomicUsize>,
-}
-
-fn services(failing_aspects: &[&str]) -> Services {
-    let model_calls = Arc::new(AtomicUsize::new(0));
-    let search_calls = Arc::new(AtomicUsize::new(0));
-    let mut model = ModelService::new();
-    model.register(AdaptiveModelProvider {
-        failing_aspects: failing_aspects
-            .iter()
-            .map(|aspect| (*aspect).to_owned())
-            .collect(),
-        calls: model_calls.clone(),
-    });
-    let mut search = SearchService::new();
-    search.register(StaticSearchProvider {
-        calls: search_calls.clone(),
-    });
-
-    Services {
-        model,
-        search,
-        model_calls,
-        search_calls,
     }
 }
 
@@ -172,250 +70,23 @@ fn sequence_services(responses: Vec<ModelResponse>) -> Services {
         calls: model_calls.clone(),
         responses: Mutex::new(responses.into()),
     });
-    let mut search = SearchService::new();
-    search.register(StaticSearchProvider {
-        calls: search_calls.clone(),
-    });
+    let search = static_search_service(search_calls.clone());
 
     Services {
         model,
         search,
         model_calls,
         search_calls,
+        max_in_flight: Arc::new(AtomicUsize::new(0)),
     }
-}
-
-fn aspect_prompt() -> String {
-    "# Aspect Agent\n\nDummy aspect agent prompt for tests.\n".to_owned()
-}
-
-fn aspect_request() -> AspectResearchRequest {
-    AspectResearchRequest {
-        schema_version: "m4".to_owned(),
-        request_id: "request-1".to_owned(),
-        task: AspectResearchTask {
-            aspect: aspect(1),
-            budget: AgentBudget::unlimited(),
-        },
-        shared_context: ResearchContext::empty(),
-        model_policy: model_policy(),
-        search_policy: search_policy(),
-        evidence_policy: evidence_policy(),
-        output_policy: output_policy(),
-        execution_policy: execution_policy(Some(180_000)),
-    }
-}
-
-fn deep_request(count: usize) -> DeepResearchRequest {
-    DeepResearchRequest {
-        schema_version: "m5".to_owned(),
-        request_id: "request-1".to_owned(),
-        user_question: "What is true?".to_owned(),
-        aspect_tasks: (1..=count).map(aspect_task).collect(),
-        budget: ResearchBudget {
-            max_agents: Limit::limited(count),
-            max_concurrent_agents: Limit::limited(2),
-            max_total_model_calls: Limit::limited(20),
-            max_total_search_calls: Limit::limited(20),
-            total_timeout_ms: Limit::limited(180_000),
-            max_tokens: Limit::unlimited(),
-        },
-        model_policy: model_policy(),
-        search_policy: search_policy(),
-        evidence_policy: evidence_policy(),
-        output_policy: output_policy(),
-        shared_context: ResearchContext::empty(),
-        execution_policy: execution_policy(Some(180_000)),
-    }
-}
-
-fn aspect(index: usize) -> AspectSpec {
-    AspectSpec {
-        aspect_id: format!("aspect-{index}"),
-        name: format!("Aspect {index}"),
-        role: "researcher".to_owned(),
-        research_question: format!("Question {index}?"),
-        scope: vec!["scope".to_owned()],
-        boundaries: vec![],
-        success_criteria: vec!["answer".to_owned()],
-        aspect_agent_prompt: aspect_prompt(),
-        allowed_tools: vec![ToolName("search".to_owned())],
-        model_provider: Some("model".to_owned()),
-        search_provider: Some("searcher".to_owned()),
-    }
-}
-
-fn aspect_task(index: usize) -> AspectResearchTask {
-    AspectResearchTask {
-        aspect: aspect(index),
-        budget: AgentBudget::unlimited(),
-    }
-}
-
-fn model_policy() -> ModelPolicy {
-    ModelPolicy {
-        allowed_providers: vec!["model".to_owned()],
-        temperature: Some(0.2),
-        max_tokens: None,
-        require_tool_call_support: true,
-    }
-}
-
-fn search_policy() -> SearchPolicy {
-    SearchPolicy {
-        allowed_providers: vec!["searcher".to_owned()],
-        max_results_per_query: 2,
-        freshness: None,
-        language: None,
-        region: None,
-        include_domains: Vec::new(),
-        exclude_domains: Vec::new(),
-    }
-}
-
-fn evidence_policy() -> EvidencePolicy {
-    EvidencePolicy {
-        require_evidence_for_findings: true,
-        min_evidence_per_finding: 1,
-    }
-}
-
-fn output_policy() -> OutputPolicy {
-    OutputPolicy {
-        language: "zh-CN".to_owned(),
-        max_findings_per_aspect: None,
-    }
-}
-
-fn execution_policy(timeout_ms: Option<u64>) -> ExecutionPolicy {
-    ExecutionPolicy {
-        allow_partial_results: true,
-        fail_fast: false,
-        timeout_ms: timeout_ms.map_or(Limit::unlimited(), Limit::limited),
-    }
-}
-
-fn tool_response() -> ModelResponse {
-    let tool_call = ModelToolCall {
-        id: "call-1".to_owned(),
-        name: "search".to_owned(),
-        arguments: json!({"query": "private query", "max_results": 1}),
-    };
-    ModelResponse {
-        provider: "model".to_owned(),
-        model: None,
-        response_id: None,
-        content: None,
-        tool_calls: vec![tool_call.clone()],
-        output_items: vec![ModelInputItem::tool_call(tool_call)],
-        usage: None,
-    }
-}
-
-fn final_response(content: String) -> ModelResponse {
-    ModelResponse {
-        provider: "model".to_owned(),
-        model: None,
-        response_id: None,
-        content: Some(content),
-        tool_calls: vec![],
-        output_items: vec![],
-        usage: None,
-    }
-}
-
-fn report(aspect_id: &str, aspect_name: &str, evidence_id: String) -> AspectReport {
-    AspectReport {
-        aspect_id: aspect_id.to_owned(),
-        aspect_name: aspect_name.to_owned(),
-        question: "What is true?".to_owned(),
-        scope: vec!["scope".to_owned()],
-        findings: vec![Finding {
-            id: format!("finding-{aspect_id}"),
-            claim: "A supported claim".to_owned(),
-            finding_type: FindingType::Fact,
-            importance: Importance::High,
-            confidence: Confidence::Medium,
-            evidence_refs: vec![evidence_id],
-            contradicted_by: vec![],
-        }],
-        assumptions: vec![],
-        risks: vec![],
-        counterarguments: vec![],
-        open_questions: vec![OpenQuestion {
-            id: format!("open-{aspect_id}"),
-            question: "What remains uncertain?".to_owned(),
-            reason: "Budget limited".to_owned(),
-            suggested_follow_up: vec!["Search again".to_owned()],
-        }],
-        confidence: Confidence::Medium,
-        limitations: vec![],
-    }
-}
-
-fn result_json(aspect_id: &str, aspect_name: &str, mut evidence: Evidence) -> String {
-    evidence.supports_findings = vec![format!("finding-{aspect_id}")];
-    serde_json::to_string(&AspectResearchResult {
-        aspect_report: report(aspect_id, aspect_name, evidence.id.clone()),
-        evidence: vec![evidence],
-    })
-    .expect("result json")
-}
-
-fn first_evidence_from_tool_output(input: &[ModelInputItem]) -> Evidence {
-    let output = input
-        .iter()
-        .rev()
-        .find_map(|item| match item {
-            ModelInputItem::ToolOutput(output) => Some(output.output.as_str()),
-            _ => None,
-        })
-        .expect("tool output");
-    let value = serde_json::from_str::<serde_json::Value>(output).expect("tool output json");
-    serde_json::from_value(value["results"][0].clone()).expect("evidence result")
-}
-
-fn has_tool_output(input: &[ModelInputItem]) -> bool {
-    input
-        .iter()
-        .any(|item| matches!(item, ModelInputItem::ToolOutput(_)))
-}
-
-fn aspect_field(input: &[ModelInputItem], label: &str) -> String {
-    let pointer = match label {
-        "Aspect ID" => "/task/aspect/aspect_id",
-        "Aspect name" => "/task/aspect/name",
-        _ => return String::new(),
-    };
-
-    input
-        .iter()
-        .find_map(|item| {
-            let ModelInputItem::Message(message) = item else {
-                return None;
-            };
-
-            serde_json::from_str::<serde_json::Value>(&message.content)
-                .ok()
-                .and_then(|value| {
-                    value
-                        .pointer(pointer)
-                        .and_then(|field| field.as_str())
-                        .map(str::to_owned)
-                })
-                .or_else(|| {
-                    message.content.lines().find_map(|line| {
-                        line.strip_prefix(label)
-                            .and_then(|value| value.strip_prefix(": "))
-                            .map(str::to_owned)
-                    })
-                })
-        })
-        .unwrap_or_default()
 }
 
 fn mcp_server(services: Services) -> LapisMcpServer {
     LapisMcpServer::new(services.model, services.search, unlimited_budget_config())
+}
+
+fn mcp_server_with_budget(services: Services, budget_config: BudgetConfig) -> LapisMcpServer {
+    LapisMcpServer::new(services.model, services.search, budget_config)
 }
 
 #[test]
@@ -467,6 +138,9 @@ fn tool_envelope_schema_omits_trace_payloads() {
     let schema_json = schema.to_string();
     assert!(!schema_json.contains("PartialTrace"));
     assert!(!schema_json.contains("TraceSummary"));
+    assert!(!schema_json.contains("Sse"));
+    assert!(!schema_json.contains("stream"));
+    assert!(schema_json.contains("failed_aspects"));
 }
 
 #[tokio::test]
@@ -502,6 +176,7 @@ async fn aspect_research_invalid_input_returns_failed_envelope() {
     let error = envelope.error.expect("tool error");
     assert_eq!(error.code, ToolErrorCode::InvalidInput);
     assert!(!error.retryable);
+    assert!(error.failed_aspects.is_empty());
 }
 
 #[tokio::test]
@@ -518,12 +193,38 @@ async fn aspect_research_budget_failure_envelope_returns_tool_error() {
 
     assert_eq!(envelope.status, ToolStatus::Failed);
     assert!(envelope.data.is_none());
-    assert_eq!(
-        envelope.error.expect("tool error").code,
-        ToolErrorCode::BudgetExceeded
-    );
+    let error = envelope.error.expect("tool error");
+    assert_eq!(error.code, ToolErrorCode::BudgetExceeded);
+    assert!(error.failed_aspects.is_empty());
     assert!(envelope.run_id.is_none());
     assert_eq!(search_calls.load(Ordering::SeqCst), 2);
+}
+
+#[tokio::test]
+async fn aspect_research_config_research_budget_failure_returns_tool_error() {
+    let services = sequence_services(vec![tool_response()]);
+    let search_calls = services.search_calls.clone();
+    let budget_config = BudgetConfig {
+        research: ResearchBudget {
+            max_total_search_calls: Limit::limited(0),
+            ..ResearchBudget::unlimited()
+        },
+        per_agent: AgentBudget::unlimited(),
+    };
+
+    let envelope = mcp_server_with_budget(services, budget_config)
+        .aspect_research(Parameters(aspect_request()))
+        .await
+        .0;
+
+    assert_eq!(envelope.status, ToolStatus::Failed);
+    assert!(envelope.data.is_none());
+    assert!(envelope.run_id.is_none());
+    let error = envelope.error.expect("tool error");
+    assert_eq!(error.code, ToolErrorCode::BudgetExceeded);
+    assert_eq!(error.aspect_id.as_deref(), Some("aspect-1"));
+    assert!(error.failed_aspects.is_empty());
+    assert_eq!(search_calls.load(Ordering::SeqCst), 0);
 }
 
 #[tokio::test]
@@ -565,25 +266,80 @@ async fn deep_research_partial_success_returns_partial_envelope() {
 
 #[tokio::test]
 async fn deep_research_all_failed_returns_failed_envelope_with_tool_error() {
-    let request = deep_request(2);
     let envelope = mcp_server(services(&["aspect-1", "aspect-2"]))
-        .deep_research(Parameters(request.clone()))
+        .deep_research(Parameters(deep_request(2)))
         .await
         .0;
-    let expected_services = services(&["aspect-1", "aspect-2"]);
-    let expected_error = deep_research(
-        request,
-        &expected_services.model,
-        &expected_services.search,
-        &unlimited_budget_config(),
-    )
-    .await
-    .expect_err("deep error")
-    .to_tool_error();
 
     assert_eq!(envelope.status, ToolStatus::Failed);
     assert!(envelope.data.is_none());
-    assert_eq!(envelope.error.expect("tool error"), expected_error);
+    let error = envelope.error.expect("tool error");
+    assert_eq!(error.code, ToolErrorCode::PartialResult);
+    assert!(error.aspect_id.is_none());
+    assert_eq!(error.failed_aspects.len(), 2);
+    assert_eq!(error.failed_aspects[0].aspect_id, "aspect-1");
+    assert_eq!(error.failed_aspects[1].aspect_id, "aspect-2");
+    assert_eq!(
+        error.failed_aspects[0].error_code,
+        "schema_validation_failed"
+    );
+    assert_eq!(
+        error.failed_aspects[1].error_code,
+        "schema_validation_failed"
+    );
+}
+
+#[tokio::test]
+async fn deep_research_duplicate_aspect_ids_is_top_level_invalid_input() {
+    let mut request = deep_request(2);
+    request.aspect_tasks[1].aspect.aspect_id = request.aspect_tasks[0].aspect.aspect_id.clone();
+
+    let envelope = mcp_server(services(&[]))
+        .deep_research(Parameters(request))
+        .await
+        .0;
+
+    assert_eq!(envelope.status, ToolStatus::Failed);
+    let error = envelope.error.expect("tool error");
+    assert_eq!(error.code, ToolErrorCode::InvalidInput);
+    assert!(error.failed_aspects.is_empty());
+}
+
+#[tokio::test]
+async fn deep_research_all_agent_budget_failures_include_failed_aspects() {
+    let mut request = deep_request(2);
+    request.budget.max_concurrent_agents = Limit::limited(1);
+    for task in &mut request.aspect_tasks {
+        task.budget.max_search_calls = Limit::limited(0);
+    }
+    let services = services(&[]);
+    let model_calls = services.model_calls.clone();
+    let search_calls = services.search_calls.clone();
+
+    let envelope = mcp_server(services)
+        .deep_research(Parameters(request))
+        .await
+        .0;
+
+    assert_eq!(envelope.status, ToolStatus::Failed);
+    assert!(envelope.data.is_none());
+    let error = envelope.error.expect("tool error");
+    assert_eq!(error.code, ToolErrorCode::PartialResult);
+    assert_eq!(error.failed_aspects.len(), 2);
+    assert!(
+        error
+            .failed_aspects
+            .iter()
+            .all(|failure| failure.error_code == "budget_exceeded")
+    );
+    assert!(
+        error
+            .failed_aspects
+            .iter()
+            .all(|failure| failure.message == "agent search call budget exhausted")
+    );
+    assert_eq!(model_calls.load(Ordering::SeqCst), 2);
+    assert_eq!(search_calls.load(Ordering::SeqCst), 0);
 }
 
 #[test]
@@ -592,15 +348,13 @@ fn error_retryability_mapping_is_stable() {
         Error::NetworkFailed {
             message: "temporary network failure".to_owned(),
         }
-        .to_tool_error()
-        .retryable
+        .retryable()
     );
     assert!(
         Error::Timeout {
             message: "deadline exceeded".to_owned(),
         }
-        .to_tool_error()
-        .retryable
+        .retryable()
     );
     assert!(
         Error::HttpStatus {
@@ -608,15 +362,76 @@ fn error_retryability_mapping_is_stable() {
             message: "service unavailable".to_owned(),
             retryable: true,
         }
-        .to_tool_error()
-        .retryable
+        .retryable()
     );
     assert!(
         !Error::InvalidInput {
             message: "missing question".to_owned(),
         }
-        .to_tool_error()
-        .retryable
+        .retryable()
+    );
+}
+
+/// `SchemaValidationFailed.message` is public-safe validator output and MUST
+/// survive into the MCP `ToolError.message`, while raw JSON conversion errors
+/// remain generic because they may include parser/provider details.
+#[test]
+fn schema_validation_failed_preserves_message_but_json_stays_generic() {
+    let validation_message = concat!(
+        "final output failed validation: mutated_evidence_provenance ",
+        "at evidence[0].snippet (mismatched fields: snippet, summary)"
+    );
+    let validation_error = Error::SchemaValidationFailed {
+        message: validation_message.to_owned(),
+    };
+
+    assert_eq!(validation_error.code().as_str(), "schema_validation_failed");
+    assert_eq!(validation_error.public_message(), validation_message);
+
+    let json_source = serde_json::from_str::<serde_json::Value>("{not json")
+        .expect_err("malformed JSON must fail");
+    let json_error = Error::Json {
+        source: json_source,
+    };
+
+    assert_eq!(json_error.code().as_str(), "schema_validation_failed");
+    assert_eq!(json_error.public_message(), "schema validation failed");
+}
+
+#[tokio::test]
+async fn aspect_research_schema_failure_envelope_preserves_validator_message() {
+    let invalid_result = json!({
+        "aspect_report": {
+            "aspect_id": "wrong-aspect",
+            "aspect_name": "Aspect 1",
+            "question": "Question 1?",
+            "scope": ["scope"],
+            "findings": [],
+            "assumptions": [],
+            "risks": [],
+            "counterarguments": [],
+            "open_questions": [],
+            "confidence": "medium",
+            "limitations": []
+        },
+        "evidence": []
+    })
+    .to_string();
+
+    let envelope = mcp_server(sequence_services(vec![final_response(invalid_result)]))
+        .aspect_research(Parameters(aspect_request()))
+        .await
+        .0;
+
+    assert_eq!(envelope.status, ToolStatus::Failed);
+    let error = envelope.error.expect("tool error");
+    assert_eq!(error.code, ToolErrorCode::SchemaValidationFailed);
+    assert!(error.message.contains("aspect_id_mismatch"));
+    assert!(error.message.contains("aspect_report.aspect_id"));
+    assert!(
+        error
+            .message
+            .contains("report aspect_id does not match requested aspect")
     );
 }
 
@@ -698,6 +513,7 @@ async fn tool_envelope_failed_serializes_null_run_id_and_null_data() {
     assert!(object["run_id"].is_null(), "run_id must serialize as null");
     assert!(object["data"].is_null(), "data must serialize as null");
     assert!(object["error"].is_object(), "error must be populated");
+    assert_eq!(object["error"]["failed_aspects"], json!([]));
 }
 
 /// Aspect-research failures MUST carry the failing aspect id in `error.aspect_id`
@@ -716,6 +532,7 @@ async fn tool_envelope_failed_aspect_research_carries_aspect_id() {
         error.aspect_id.as_deref(),
         Some(expected_aspect_id.as_str())
     );
+    assert!(error.failed_aspects.is_empty());
 }
 
 /// Top-level deep-research failures cannot be tied to a single aspect, so
@@ -732,16 +549,14 @@ async fn tool_envelope_failed_deep_research_aspect_id_is_none() {
     let error = envelope.error.expect("tool error");
     assert_eq!(error.code, ToolErrorCode::UnsupportedSchemaVersion);
     assert!(error.aspect_id.is_none());
+    assert!(error.failed_aspects.is_empty());
 }
 
-/// `ToolError.message` MUST be a stable, redacted summary; detailed context
-/// (provider names, request bodies, header values, caller-supplied schema
-/// versions, paths) belongs in `tracing`, never in the public envelope.
-///
-/// Covers the three known leak paths: `HttpTransport.message`,
-/// `ProviderUnavailable.provider`, and `UnsupportedSchemaVersion.version`.
+/// Public messages MUST not leak provider names, request bodies, header values,
+/// caller-supplied schema versions, or host file paths. Curated schema
+/// validation diagnostics are tested separately.
 #[test]
-fn tool_envelope_message_redacts_provider_path_and_api_key() {
+fn public_message_redacts_provider_path_and_api_key() {
     let cases = vec![
         (
             Error::HttpTransport {
@@ -752,7 +567,6 @@ fn tool_envelope_message_redacts_provider_path_and_api_key() {
                 .to_owned(),
                 retryable: true,
             },
-            ToolErrorCode::NetworkFailed,
             vec![
                 "Authorization",
                 "sk-abcdef",
@@ -767,26 +581,22 @@ fn tool_envelope_message_redacts_provider_path_and_api_key() {
                 provider: "openai".to_owned(),
                 message: "missing OPENAI_API_KEY in /home/user/lapis.toml".to_owned(),
             },
-            ToolErrorCode::ProviderUnavailable,
             vec!["openai", "OPENAI_API_KEY", "/home/user/lapis.toml"],
         ),
         (
             Error::UnsupportedSchemaVersion {
                 version: "../../Authorization=sk-abcdef".to_owned(),
             },
-            ToolErrorCode::UnsupportedSchemaVersion,
             vec!["Authorization", "sk-abcdef", "../"],
         ),
     ];
 
-    for (error, expected_code, forbidden_fragments) in cases {
-        let tool_error = error.to_tool_error();
-        assert_eq!(tool_error.code, expected_code);
+    for (error, forbidden_fragments) in cases {
+        let message = error.public_message();
         for forbidden in forbidden_fragments {
             assert!(
-                !tool_error.message.contains(forbidden),
-                "public message leaked forbidden fragment `{forbidden}`: {}",
-                tool_error.message
+                !message.contains(forbidden),
+                "public message leaked forbidden fragment `{forbidden}`: {message}"
             );
         }
     }
@@ -798,7 +608,7 @@ fn tool_envelope_message_redacts_provider_path_and_api_key() {
 #[tokio::test]
 async fn unsupported_schema_version_returns_dedicated_code_aspect_research() {
     let mut request = aspect_request();
-    request.schema_version = "v999".to_owned();
+    request.schema_version = "../../Authorization=sk-abcdef".to_owned();
     let envelope = mcp_server(services(&[]))
         .aspect_research(Parameters(request))
         .await
@@ -806,6 +616,10 @@ async fn unsupported_schema_version_returns_dedicated_code_aspect_research() {
     assert_eq!(envelope.status, ToolStatus::Failed);
     let error = envelope.error.expect("tool error");
     assert_eq!(error.code, ToolErrorCode::UnsupportedSchemaVersion);
+    assert_eq!(error.message, "unsupported schema version");
+    assert!(!error.message.contains("Authorization"));
+    assert!(!error.message.contains("sk-abcdef"));
+    assert!(error.failed_aspects.is_empty());
 }
 
 /// Same dedicated-code guarantee for the deep_research entry point.
@@ -820,6 +634,7 @@ async fn unsupported_schema_version_returns_dedicated_code_deep_research() {
     assert_eq!(envelope.status, ToolStatus::Failed);
     let error = envelope.error.expect("tool error");
     assert_eq!(error.code, ToolErrorCode::UnsupportedSchemaVersion);
+    assert!(error.failed_aspects.is_empty());
 }
 
 #[test]
@@ -851,10 +666,10 @@ timeout_ms = 30000
 
 [search.providers.grok]
 enabled = false
-base_url = "https://api.x.ai"
+base_url = "https://api.x.ai/v1"
 api_key_env = "XAI_API_KEY"
 timeout_ms = 30000
-model = "grok-4.20-fast"
+model = "grok-4.3"
 
 [model.providers.openai]
 enabled = false
@@ -910,9 +725,9 @@ timeout_ms = -1
     let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
 
-    assert!(!stdout.contains("lapis core initialized"));
+    assert!(!stdout.contains("lapis initialized"));
     assert!(
-        stderr.contains("lapis core initialized"),
+        stderr.contains("lapis initialized"),
         "expected startup logs on stderr, got stderr: {stderr}"
     );
 }

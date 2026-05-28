@@ -1,15 +1,15 @@
-use lapis_core::schema::budget::{AgentBudget, ResearchBudget};
-use lapis_core::schema::limit::{CountLimit, DurationLimitMs, Limit};
-use lapis_core::schema::model::{ModelInputItem, ModelMessageRole, ModelRequest};
-use lapis_core::schema::policy::{
-    EvidencePolicy, ExecutionPolicy, ModelPolicy, OutputPolicy, SearchPolicy, ToolName,
-};
-use lapis_core::schema::report::{
+use lapis_model::{ModelInputItem, ModelMessageRole, ModelRequest};
+use lapis_workflow::{AgentBudget, ResearchBudget};
+use lapis_workflow::{
     AspectReport, AspectResearchResult, Confidence, Evidence, Finding, FindingType, Importance,
     SourceType,
 };
-use lapis_core::schema::research::{
+use lapis_workflow::{
     AspectResearchRequest, AspectResearchTask, AspectSpec, DeepResearchRequest, ResearchContext,
+};
+use lapis_workflow::{CountLimit, DurationLimitMs, Limit};
+use lapis_workflow::{
+    EvidencePolicy, ExecutionPolicy, ModelPolicy, OutputPolicy, SearchPolicy, ToolName,
 };
 use schemars::schema_for;
 use serde_json::json;
@@ -37,6 +37,7 @@ fn minimal_request() -> ModelRequest {
         previous_response_id: None,
         input: vec![ModelInputItem::message(ModelMessageRole::User, "hello")],
         tools: Vec::new(),
+        response_format: None,
         temperature: None,
         max_tokens: None,
     }
@@ -98,7 +99,7 @@ fn execution_policy(timeout_ms: Option<u64>) -> ExecutionPolicy {
 #[test]
 fn deep_research_request_roundtrips_plan_fields_json() {
     let request = DeepResearchRequest {
-        schema_version: "m5".to_owned(),
+        schema_version: "0.1".to_owned(),
         request_id: "request-1".to_owned(),
         user_question: "What should Lapis build first?".to_owned(),
         aspect_tasks: vec![AspectResearchTask {
@@ -136,7 +137,7 @@ fn deep_research_request_roundtrips_plan_fields_json() {
 #[test]
 fn aspect_research_request_roundtrips_json() {
     let request = AspectResearchRequest {
-        schema_version: "m4".to_owned(),
+        schema_version: "0.1".to_owned(),
         request_id: "req-1".to_owned(),
         task: AspectResearchTask {
             aspect: aspect(),
@@ -157,6 +158,22 @@ fn aspect_research_request_roundtrips_json() {
     let decoded: AspectResearchRequest = serde_json::from_str(&value).expect("deserialize request");
 
     assert_eq!(decoded, request);
+}
+
+#[test]
+fn aspect_and_deep_research_request_schemas_remain_distinct() {
+    let aspect_schema =
+        serde_json::to_value(schema_for!(AspectResearchRequest)).expect("aspect request schema");
+    let deep_schema =
+        serde_json::to_value(schema_for!(DeepResearchRequest)).expect("deep request schema");
+
+    assert!(aspect_schema.pointer("/properties/task").is_some());
+    assert!(aspect_schema.pointer("/properties/aspect_tasks").is_none());
+    assert!(aspect_schema.pointer("/properties/user_question").is_none());
+
+    assert!(deep_schema.pointer("/properties/aspect_tasks").is_some());
+    assert!(deep_schema.pointer("/properties/user_question").is_some());
+    assert!(deep_schema.pointer("/properties/task").is_none());
 }
 
 #[test]
