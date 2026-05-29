@@ -10,4 +10,4 @@ FathomX 需要一个可信、低幻觉的深度研究执行内核。自建 Pytho
 
 ## Consequences
 - Layer 1 业务编排留在 prompts/skill，Rust 只做机制（上轮三方核验已确认）。
-- 注入清单见 `docs/fathomx-business-input-to-lapis.md`，审计见 `docs/lapis-migration-audit.md`。
+- 注入清单见 `docs/archive/fathomx-business-input-to-lapis.md`（Phase 2 已合并入 `docs/specs/fathomx-competitive-research-spec.md`），审计见 `docs/lapis-migration-audit.md`。

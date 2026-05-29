@@ -21,9 +21,9 @@
 ## 2. 输入
 
 - **待合并的 3 份草稿**（都早于 Phase 1，有系统性分歧）：
-  - [`docs/fathomx-business-supplement.md`](../fathomx-business-supplement.md)（11 条补充 + Lapis 开放问题回答）
-  - [`docs/fathomx-business-input-to-lapis.md`](../fathomx-business-input-to-lapis.md)（业务层注入清单 1.1–1.11 + Q1–Q8）
-  - [`docs/Lapis 业务层补充文档：Product Deep Research 模式.md`](../Lapis%20业务层补充文档：Product%20Deep%20Research%20模式.md)
+  - [`docs/archive/fathomx-business-supplement.md`](../archive/fathomx-business-supplement.md)（11 条补充 + Lapis 开放问题回答）
+  - [`docs/archive/fathomx-business-input-to-lapis.md`](../archive/fathomx-business-input-to-lapis.md)（业务层注入清单 1.1–1.11 + Q1–Q8）
+  - [`docs/archive/Lapis 业务层补充文档：Product Deep Research 模式.md`](../archive/Lapis%20业务层补充文档：Product%20Deep%20Research%20模式.md)
 - **Phase 1 方法决策**：[`track-b`](../research/track-b-product-methodology.md)（B1 五维 / B2 八段模板 / B3 13 条 TM）、[`track-a`](../research/track-a-orchestration-credibility.md)（A1 4-tier / A2 反幻觉 / A3 MECE 工程 / A4 多人格 / A5 动态预算）、[`citation-audit`](../research/citation-audit.md)。
 - **ADR-0006** 的 3 条确认决策（五维↔MECE-6 分层 / 2 人格+质量门 / ODI 估算+TM-4 标注）。
 - **评测可借素材**：DeepTRACE 8 维（arXiv 2509.04499）、ResearchRubrics（2511.07685）、DeepResearch Bench（2506.11763）——均已核实为真。
@@ -44,7 +44,7 @@
 ## 4. 任务分解（Work Streams）
 
 ### WS1 · 权威业务需求规格（核心，最大头）
-产出 `docs/spec/fathomx-competitive-research-spec.md`（单一 canonical）。按 §3 清单逐项消解分歧，结构建议：
+产出 `docs/specs/fathomx-competitive-research-spec.md`（单一 canonical）。按 §3 清单逐项消解分歧，结构建议：
 1. 范围与决策驱动定位（竞品深度研究=v2.0；MECE-6 顶层框架）
 2. 复杂度路由（Quick/Standard/Deep）+ 决策意图推断
 3. **竞品研究五维骨架**（B1）：每维=主用方法 + 证据标准 + 报告落点
@@ -58,19 +58,19 @@
 - 完成后归档旧 3 份到 `docs/archive/`（保留可追溯）。
 
 ### WS2 · 评测 rubric + quality floor
-产出 `docs/eval/rubric.md`。
+产出 `docs/evaluation/rubric.md`。
 - 借 **DeepTRACE 8 维**（答案：置信/单面性；来源：数量/质量；引用：充分性/准确性/无支撑率/必要性）+ **ResearchRubrics** + 竞品研究专属维（五维覆盖度、证据完整性含视觉证据、ODI/Kano 严谨度、TM 产品专家味、宁少但真弃权纪律）。
 - 定义 quality floor 阈值（每维 ≥N 来源、引用准确率门槛、关键声明零无支撑、能力矩阵格必附视觉/可核实证据）。
 - **自评闭环**：规格本身须通过自己的 rubric（= 退出标准之一）。
 
 ### WS3 · 黄金样例（海外健身/运动产品）
-产出 `docs/eval/golden/`。
+产出 `docs/evaluation/golden/`。
 - 选 1–2 个真实可核实的海外健身/运动竞品课题（候选：connected strength 如 Tonal/Tempo；跑步教练 app 如 Strava/Runna/Nike Run Club；智能跳绳/可穿戴）。
 - 产出**专家级参考产出**（应用五维骨架 + 证据完整性 + TM + 真实已核实来源），作为"远超普通 LLM"的可证伪基准。
 - **深度待定（§7 确认）**：建议 Phase 2 先全规格化课题 + rubric + **1 个课题做到专家级完整参考**（兼作 dogfooding 规格）；另一课题留 Phase 3 验证时补。
 
 ### WS4 · Layer1↔Lapis 编排接口
-产出 `docs/spec/orchestration-interface.md`。
+产出 `docs/specs/orchestration-interface.md`。
 - 逐步定义接口：复杂度路由 → 决策意图推断 → `research_plan`（tier/decision_intent/五维 aspects）→ `aspect_research`（人格 prompt/搜索策略/gap loop）→ Layer1 跨 aspect gap 检测 → 综合 → 报告模板 → 证据/方法论附录。
 - 映射 Lapis MCP 工具与所需 schema 字段（decision_intent/tier/dimension/persona/gap_status/credibility/visual_evidence）。
 - 注：Lapis 引擎的 Rust schema 实际扩展是 Phase 3 工作（最小、可选）；本阶段只做**文档级接口设计**，对照 Lapis 现有 schema。

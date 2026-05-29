@@ -24,8 +24,10 @@
 - `architecture.md`、`configuration.md`、`development.md`、`mcp-usage.md` — 引擎自身架构/配置/开发/MCP API
 
 **FathomX 业务层（本项目自有）**
-- `Lapis 业务层补充文档：Product Deep Research 模式.md` — 业务层草稿（Phase 2 待打磨/重做）
-- `fathomx-business-supplement.md`、`fathomx-business-input-to-lapis.md` — 业务层注入清单
+- `specs/fathomx-competitive-research-spec.md` — **竞品深度研究业务需求规格（canonical · v2.0）**，Phase 2 WS1 合并 3 份草稿而成，单一事实源
 - `lapis-migration-audit.md` — 迁移审计（Opus+Codex 交叉）
 - `prompt-engineering-academic-foundations.md` — 提示词工程学术依据（Phase 1 相关）
 - `research-agent-product.md` — 研究 agent 产品说明
+
+**已归档（`archive/`，被 canonical 规格取代，仅留可追溯）**
+- `Lapis 业务层补充文档：Product Deep Research 模式.md`、`fathomx-business-supplement.md`、`fathomx-business-input-to-lapis.md` — 3 份早期业务层草稿（早于 Phase 1，已合并入 `specs/` canonical 规格）
