@@ -104,14 +104,16 @@ Lapis `Evidence.source_type` ∈ `{official, documentation, news, blog, forum, r
 
 ---
 
-## 6. Phase 3 可选 Rust 扩展（仅当需机器强校验）
+## 6. 引擎边界：第一版不动引擎；schema 扩展作为「需求」提给上游（Heye 2026-05-29 确认）
 
-若实测发现 prompt+Skill 承载产品结构不稳（agent 不照约定填 claim/漏视觉证据），再考虑给 Lapis 加**可选**字段（向上游 PR 或本地 patch）：
-- `Evidence` 加 `media_type` + `visual` 标记；`source_type` 扩 `app_store|social|video|research`。
-- `AspectReport` 加 `extensions: object`（自由结构）承载五维结构化输出。
-- `EvidencePolicy` 加 `require_visual_evidence_for_aspects: string[]`。
+**引擎不是我们做的**——Lapis 由上游 **4o3F** 维护，FathomX 是消费方（见 [ADR-0002](../decisions/0002-fathomx-lapis-decoupled.md)）。因此：
 
-规格已将这些标为**可选**——v2.0 先用纯 prompt/Skill 方案跑通，用 [rubric](../evaluation/rubric.md) 实测是否需要硬 schema。
+- **v2.0 第一版不碰引擎**：纯 prompt+Skill 承载产品字段（§3），用 [rubric](../evaluation/rubric.md) + 黄金样例实测是否够稳。
+- **后续若实测承载不稳**（agent 不照约定填 claim / 漏视觉证据 / 需机器强校验），把下列 schema 扩展整理成**需求清单提给 4o3F 上游**（我们提需求，不自己改引擎源码）：
+  - `Evidence` 加 `media_type` + `visual` 标记；`source_type` 扩 `app_store|social|video|research`。
+  - `AspectReport` 加 `extensions: object`（自由结构）承载五维结构化输出。
+  - `EvidencePolicy` 加 `require_visual_evidence_for_aspects: string[]`。
+- 规格已将这些标为**可选**，不构成 v2.0 阻塞。
 
 ---
 

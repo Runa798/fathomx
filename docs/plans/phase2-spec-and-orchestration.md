@@ -128,6 +128,7 @@ WS5（小，已授权）先做 → WS1（基础）→ WS2 与 WS4 可在 WS1 维
 - rubric 的 floor 维度 → 做成 skill 内自动 quality-gate。
 - 黄金样例的改进点（B3 证据加厚、C1 实抓截图）= Phase 3 端到端要补的能力。
 
-### 待 Heye 确认
-- 全套 Phase 2 产出（规格/rubric/接口/黄金样例）是否签收，可进 Phase 3？
-- WS4 的"v2.0 不改 Lapis Rust、纯 Skill+prompt 承载产品字段"路线是否认可（影响 Phase 3 是否要碰引擎）。
+### Heye 确认结果（2026-05-29）
+- **Phase 2 签收**：⏳ **先详细评审再说**——Heye 通读规格/rubric/黄金样例等后再签收，暂不进 Phase 3。
+- **WS4 引擎路线**：✅ **第一版不动引擎**；后续跑通后若有需求，**整理成需求提给上游 4o3F**（引擎非我们做，我们只提需求）。详见 [接口 §6](../specs/orchestration-interface.md#6-引擎边界第一版不动引擎schema-扩展作为需求提给上游heye-2026-05-29-确认)。
+- **push**：先不 push，留本地待评审。
