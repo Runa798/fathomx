@@ -112,23 +112,34 @@ WS5（小，已授权）先做 → WS1（基础）→ WS2 与 WS4 可在 WS1 维
 3. **归档**：3 份草稿移入 `docs/archive/`，统一目录 `specs/`，修全链接。
 4. **WS2 rubric**（[`evaluation/rubric.md`](../evaluation/rubric.md)）：12 维可打分 + floor 硬门槛 + 普通 LLM 基线（可证伪）+ 捏造一票否决。
 5. **WS4 接口**（[`specs/orchestration-interface.md`](../specs/orchestration-interface.md)）：对照 Lapis 真实 MCP。**关键发现**：Lapis 仅 `aspect_research`+`deep_research`，无 `research_plan`/`compare_reports` → 拆解/综合/对比/13章/分级全在 Skill；产品结构字段 v2.0 用 prompt+Skill 承载，不改 Rust（可选扩展留 Phase 3）。
-6. **WS3 黄金样例**（[`evaluation/golden/running-coach-ai-upgrade.md`](../evaluation/golden/running-coach-ai-upgrade.md)）：Wide Research 4 子代理并行 + 主会话独立核实承重引用（Strava-Runna 收购/Nature npj 伤病预测 Tier-1/WHOOP Coach 均✅核实）；产出 Strava AI 升级方向专家报告，rubric 自评 **22/24**。
+6. **WS3 黄金样例**（[`evaluation/golden/running-coach-ai-upgrade.md`](../evaluation/golden/running-coach-ai-upgrade.md)）：Wide Research 4 子代理并行 + 主会话独立核实承重引用（Strava-Runna 收购/Nature npj 伤病预测 Tier-1/WHOOP Coach 均✅核实）；产出 Strava AI 升级方向专家报告，rubric 自评 **23/24**（按 Heye 审计改写为论点先行的专家叙事 + 补 build-cost/版本历史维度，见下「Heye 审计反馈应用」）。
 
 ### 退出标准核对
 | 项 | 状态 |
 |---|---|
 | canonical 规格完成、对齐 Phase 1、证据完整性一等支柱 | ✅ |
 | 评测 rubric 定义；规格强制每维（自评通过）| ✅ |
-| ≥1 海外健身黄金课题专家级参考产出 | ✅（22/24）|
+| ≥1 海外健身黄金课题专家级参考产出 | ✅（23/24，已按审计改写）|
 | Layer1↔Lapis 每步接口文档级明确 | ✅ |
 | ROADMAP 加泛化阶段 | ✅ |
 
 ### 对 Phase 3 的输入（回写 ROADMAP §3 Phase 3）
 - 接口已定 Skill 侧承载产品结构（无需先改 Rust）→ Phase 3 先落 `prompts/layer1/*` + `prompts/layer2/persona-*.md` 实体文件（按 WS4 §2 映射 + §3 prompt 契约 + §5 预算）。
 - rubric 的 floor 维度 → 做成 skill 内自动 quality-gate。
-- 黄金样例的改进点（B3 证据加厚、C1 实抓截图）= Phase 3 端到端要补的能力。
+- 黄金样例的改进点（C1 实抓截图、竞品完整版本时间线做定量 build-cost）= Phase 3 端到端要补的能力。
 
 ### Heye 确认结果（2026-05-29）
-- **Phase 2 签收**：⏳ **先详细评审再说**——Heye 通读规格/rubric/黄金样例等后再签收，暂不进 Phase 3。
+- **Phase 2 签收**：✅ **已签收**（2026-05-29，审计第一轮通过 —— Heye："这轮修订及格了，可以提交和继续"）。可进 Phase 3。
 - **WS4 引擎路线**：✅ **第一版不动引擎**；后续跑通后若有需求，**整理成需求提给上游 4o3F**（引擎非我们做，我们只提需求）。详见 [接口 §6](../specs/orchestration-interface.md#6-引擎边界第一版不动引擎schema-扩展作为需求提给上游heye-2026-05-29-确认)。
 - **push**：先不 push，留本地待评审。
+
+### Heye 审计反馈应用（2026-05-29，第一轮）
+Heye 详细评审给出两条反馈，已应用（保留确认锚点、只改指出维度、不推倒重来）：
+
+1. **建设成本/迭代节奏是缺失的一等维度**：竞品研究判"是否建设某功能"必须研究**建设成本**；竞品 changelog/版本更新频率是其**实际动作（revealed strategy）**——既是 build-cost 信号，也暴露真实投入优先级。
+   - 落地：规格 §1.2（Build/Not Build 输出加建设成本）、§3 新增「迭代节奏与建设成本（实际动作证据）」note（绑 TM-12 言行分离）、§4.3、§6.1（release notes 入 Tier 2）、§7.3（复杂度列用迭代节奏佐证）、§9.1（新增 Build 意图 gap 检测）；rubric B3（证据加"版本迭代记录"）+ C3（复杂度 build-cost 佐证）；接口 §2（Build 意图拉版本历史）+ §4（official 含 release notes）。
+   - 真实性核实：子代理确认这是成熟 CI 实践（Trackmore/CI Alliance/Seeto 等），数据源 = App Store Version History（最丰富免费档）；**剔除** Grok 无法核实的 Crayon/Klue 引语。
+
+2. **黄金样例不能机械堆砌表格，要按"给人读"的专业写法**：维度对，但行文是有专业惯例的 genre。
+   - 落地：先 Wide Research 真实优质案例（Stratechery/Built for Mars/Lenny's/McKinsey 行动标题/Minto Pyramid/Amazon 六页备忘录），抽出 12+ 条写法惯例 → 写成规格 **§7.4 行文规范**（论点先行/标题即论点/表格作证据/按主题综合/校准不确定性/收尾给行动）+ rubric **行文 floor**（机械堆砌判不通过）。
+   - 据此**改写黄金样例**为论点先行的专家叙事；顺带应用子代理事实核查：删未核实的 Athlete Intelligence "2025-02 GA"、更正 "Garmin Run Coach"→官方名、区分单独/捆绑定价。自评升 22→**23/24**（B3 因 build-cost 证据补满，唯 C1 实图待 Layer 2）。

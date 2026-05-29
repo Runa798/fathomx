@@ -53,6 +53,7 @@
 - **Quick**：只跑 `job-and-competitive-set` + `capability-and-importance`。
 - **Standard**：前 4 个。**Deep**：全部 5 个（+ 按需每竞品 profile）。
 - `scope`/`boundaries`/`success_criteria` 由 Skill 按维度的"证据标准"（规格 §3）填，使 Lapis 的 success_criteria 即我们的证据门槛。
+- **Build/Not Build 意图补充**：`capability-and-importance`（或单列一个 aspect）的 `aspect_agent_prompt` 须要求拉取竞品 **release notes / App Store 版本历史**，用迭代节奏估算 build-cost（规格 §3「迭代节奏与建设成本」），把复杂度估算 + 版本时间线写进 `Finding.claim`，证据 url 指向版本历史页。
 
 ---
 
@@ -78,7 +79,7 @@ Lapis `Evidence.source_type` ∈ `{official, documentation, news, blog, forum, r
 
 | Lapis source_type | + 域名启发式 | 4-tier | 展示标签 |
 |---|---|---|---|
-| official / documentation | 官网/财报/应用商店/.gov/.edu | Tier 1–2 | High |
+| official / documentation | 官网/财报/应用商店/**release notes·版本历史**/.gov/.edu | Tier 1–2 | High |
 | news / blog | 主流媒体/具名评测/开发者博客 | Tier 3 | Medium |
 | forum | 应用商店评论/社媒/论坛 | Tier 3（社区子类）| Low（仅情绪/线索/假设）|
 | unknown | 无日期/无法追溯 | Tier 4 | Unknown（不进核心结论）|
