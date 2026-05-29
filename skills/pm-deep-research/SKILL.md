@@ -7,7 +7,7 @@ version: 0.1.0
 # PM DeepResearch — Competitive Deep Research Skill
 
 > Status: Phase 3 WIP (M1). This is the specialized FathomX→**PM DeepResearch** competitive-research skill (decision D1). It consumes the upstream Lapis MCP core unchanged (interface §6) and carries the product methodology via prompt assets + Skill-layer assembly.
-> ⚠️ **NOT YET RUNNABLE (M1).** The Layer-1 prompts (`task-decomposition` / `agent-allocation` / `final-report`) are still pending (WS-B/WS-C). The Workflow below is the **target design**, not yet executable end-to-end — do not invoke this skill until M3. Only the Layer-2 persona prompts are complete.
+> ⚠️ **NOT YET RUNNABLE (M2).** All Layer-1 prompts are done — decomposition + allocation (WS-B) and the 13-chapter `final-report` with gap audit + quality-floor self-verification (WS-C). Still pending: standalone evidence post-processing wiring (WS-E) and the skill-entry + Claude-only degradation wiring (WS-D). The Workflow below is the **target design**, not yet executable end-to-end — do not invoke this skill until M3.
 > Canonical spec: [`../../docs/specs/pm-deep-research-competitive-research-spec.md`](../../docs/specs/pm-deep-research-competitive-research-spec.md). Interface: [`../../docs/specs/orchestration-interface.md`](../../docs/specs/orchestration-interface.md). Rubric: [`../../docs/evaluation/rubric.md`](../../docs/evaluation/rubric.md).
 
 ## Purpose
@@ -37,9 +37,10 @@ Use this skill for **competitive deep research**: competitive analysis, differen
 ## Asset status (Phase 3)
 
 - ✅ `prompts/layer2/persona-experience-analyst.md`, `persona-strategist.md` (M1 / WS-A).
-- ⏳ `prompts/layer1/task-decomposition.md` (competitive variant), `agent-allocation.md` (M1 / WS-B) — pending.
-- ⏳ `prompts/layer1/final-report.md` (13-ch product report + §7.4) (M2 / WS-C) — pending.
-- ⏳ Evidence post-processing + degradation wiring (M2–M3 / WS-E, WS-D) — pending.
+- ✅ `prompts/layer1/task-decomposition.md` (competitive variant), `agent-allocation.md` (M1 / WS-B).
+- ✅ `prompts/layer1/final-report.md` (13-ch product report + §7.4 + gap audit + quality-floor self-verification) (M2 / WS-C).
+- ⏳ Evidence post-processing (4-tier mapping / visual-evidence assembly / CiteEval) (M2 / WS-E) — partly specified inline in final-report.md; standalone Skill wiring pending.
+- ⏳ Skill entry + Claude-only degradation wiring (M3 / WS-D) — pending.
 
 ## Policy boundaries (inherited from Lapis)
 
