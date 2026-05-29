@@ -1,6 +1,6 @@
 # Phase 3 · Skill 编排实现与验证（细化计划）
 
-> Status: Phase 3 入口细化计划（2026-05-29；关键决策已对齐；D3 已验证；Codex+subagent 交叉审计已纳入修订）。**M1 进行中**。
+> Status: Phase 3（2026-05-30）。**M1 完成**（WS-A 人格 + WS-B 编排）、**M2 完成**（WS-C 13 章报告+自验证）；**M4 进行中**（端到端实跑：承载验证通过；引擎 SSE 上限本地补丁+提上游 [#8](https://github.com/4o3F/Lapis/issues/8)；deep partial 4/6，订正后续跑补 2 aspect → 装配+打分）。见 §3e。
 > rolling-wave：本文件 = Phase 3 细化计划；完成时回写 review 并调整 [`../../ROADMAP.md`](../../ROADMAP.md)。
 > 上游：Phase 2 已签收（[规格](../specs/pm-deep-research-competitive-research-spec.md) / [rubric](../evaluation/rubric.md) / [接口](../specs/orchestration-interface.md) / [黄金样例](../evaluation/golden/running-coach-ai-upgrade.md) 23/24）。
 > 目标版本：**v2.0 = 竞品深度研究端到端跑通 + 验证**（ROADMAP §3 Phase 3）。
@@ -145,15 +145,39 @@ docs/ · README.md（改品牌）· LICENSE
 
 ---
 
+## 3e. M4 端到端实跑发现（2026-05-30，进行中）
+
+黄金课题 Strava AI 升级实跑（6 aspect deep_research）。详细数据见 [`../../.m4-run/m4-findings.md`](../../.m4-run/m4-findings.md)。实跑工具：持久 stdin 的 MCP stdio 客户端 `.m4-run/mcp_call.py`（容器→SSH 桥→heyev100 lapis serve，**不必注册 MCP**）。
+
+**承载验证 = 通过**：strategist/experience 人格在真实引擎上按契约产出——结构化块进 `Finding.claim`（数值 ODI `I+max(0,I-S)`+estimated、定位价值曲线、Christensen 威胁分级、build-cost 版本时间线）、TM-4 认识论标注、TM-11 `contradicted_by`、byte-equal 证据全过逐字校验。这是 Phase 3 退出标准 3 的关键正向信号。
+
+**修复/发现（按性质）**：
+| 级别 | 发现 | 处理 |
+|---|---|---|
+| 阻塞(引擎) | `MAX_SSE_EVENTS=4096` 硬编码且不可配（测试 `rejects_network_stream_knobs` 强制拒 toml），gpt-5.5 推理综合轮实测峰值 **6485** 事件撞顶 → `network_failed`。缩证据量无效。 | 本地补 `lapis-net` 4096→65536 / data 8MB→64MB + 重建（峰值仅占 9.9%）；已提上游 **[4o3F/Lapis#8](https://github.com/4o3F/Lapis/issues/8)** |
+| 阻塞(本侧 bug) | `task-decomposition.md` 误写 `execution_policy.timeout_ms = total_timeout_ms`；deep 执行时每 aspect 按"≤ 自身 budget.timeout_ms(600000)"复校 → 全 aspect `budget_exceeded` | 改为 `execution_policy.timeout_ms = per-aspect 600000`（≤ total）；prompt 已订正含两层校验说明 |
+| 承载缺陷 | `capability-and-importance` aspect `schema_validation_failed: supports_findings_mismatch`——agent `evidence.supports_findings` 与 finding `evidence_refs` 双向不一致 | 两人格补「双向一致 invariant + 返回前自检」；待重跑验证 |
+| 瞬时 | `positioning-whitespace` `provider_unavailable`（3 并发下 CPA/grok 抖动，retryable:false） | 重试即可；非方法论问题 |
+
+**本轮 deep 结果**：partial 4/6 完成（job-set / opportunity-gaps / build-cost / experience-paths），16 证据。
+
+**M4 续跑计划（compact 后继续）**：
+1. 用订正后的人格重跑 deep（或单独 `aspect_research` 补 capability + positioning 两个），目标 6/6 完成。
+2. 用 `final-report.md` 把 `DeepResearchResult` 装配成 13 章报告（M4-3）。
+3. 按 12 维 rubric + 行文 floor 打分，对照黄金样例 22/24，记录承载是否够稳 → 决定是否再提 4o3F 需求。
+4. 通过后 → WS-D（skill 入口/降级收尾）+ WS-E（证据后处理独立化）；再进 v2.0 收口。
+
+---
+
 ## 4. 建议顺序与里程碑
 
-1. **M1 · 方法论资产**：WS-A 人格 + WS-B 编排（纯 prompt，不依赖运行环境）。
-2. **M2 · 报告 + 证据**：WS-C 13 章模板/自验证 + WS-E 证据后处理。
-3. **M3 · Skill 入口 + 降级**：WS-D（先保证 Claude-only 降级可跑）。
-4. **M4 · 端到端验证**：WS-G 实跑 + rubric 打分（Lapis 可用则全功能，否则 Claude-only 验证方法论）。
-5. **M5 · 结构重组（可选/按 D2）**：WS-F。
+1. **M1 · 方法论资产** ✅：WS-A 人格 + WS-B 编排。
+2. **M2 · 报告 + 证据** ✅：WS-C 13 章模板/自验证（WS-E 方法内联，独立装配待办）。
+3. **M3 · Skill 入口 + 降级**：WS-D（先保证 Claude-only 降级可跑）— 待办。
+4. **M4 · 端到端验证** 🚧：全功能实跑已起（Lapis 可用，§3e）；承载验证通过；续跑补 2 aspect → 装配 + rubric 打分。
+5. **M5 · 结构重组（可选/按 D2）**：WS-F — 待办。
 
-M1–M2 不依赖运行环境，可立即开工；M4 全功能跑依赖 D3。
+M4 全功能跑已确认可行（D3 + §3e）。
 
 ---
 

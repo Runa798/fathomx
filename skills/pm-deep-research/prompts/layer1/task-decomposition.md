@@ -163,13 +163,13 @@ Return only JSON matching this shape (no Markdown wrapper):
     "excluded_assumptions": ["string"],
     "prior_sources": []
   },
-  "execution_policy": { "allow_partial_results": true, "fail_fast": false, "timeout_ms": 1260000 }
+  "execution_policy": { "allow_partial_results": true, "fail_fast": false, "timeout_ms": 600000 }
 }
 ```
 
-> This is the exact `DeepResearchRequest` wire shape — do not add fields outside it. `decision_intent` and the complexity tier are **not** request fields; they live in `shared_context.summary` (which is what aspect agents read) and in the Skill's own orchestration state (used later for report tailoring, spec §7.1 Ch 2). For a single-aspect Quick study, emit an `AspectResearchRequest` instead (one `task` instead of `aspect_tasks[]`, no top-level `budget`; its `execution_policy.timeout_ms` must equal `task.budget.timeout_ms`).
+> This is the exact `DeepResearchRequest` wire shape — do not add fields outside it. `decision_intent` and the complexity tier are **not** request fields; they live in `shared_context.summary` (which is what aspect agents read) and in the Skill's own orchestration state (used later for report tailoring, spec §7.1 Ch 2). For a single-aspect Quick study, emit an `AspectResearchRequest` instead (one `task` instead of `aspect_tasks[]`, no top-level `budget`; its `execution_policy.timeout_ms` must be ≤ `task.budget.timeout_ms`).
 >
-> **`execution_policy.timeout_ms` must equal `budget.total_timeout_ms`** (the validator rejects `execution timeout > research budget timeout`). The literal `1260000` above is the standard/deep value; for `quick` use `660000` to match that tier's `total_timeout_ms`. Never copy a larger execution timeout than the tier's total.
+> **`execution_policy.timeout_ms` must equal the per-aspect `budget.timeout_ms` (600000), NOT `total_timeout_ms`.** Two validator checks apply: at the deep_research level `execution_policy.timeout_ms` must be ≤ `budget.total_timeout_ms`; but during execution `deep_research` re-validates each aspect as an `AspectResearchRequest` whose ceiling is that aspect's own `budget.timeout_ms` — so `execution_policy.timeout_ms > 600000` makes **every** aspect fail `budget_exceeded: "execution timeout must not exceed agent budget timeout"` (empirically observed M4). Set it to 600000 (≤ both). `total_timeout_ms` stays the per-tier wave total (e.g. 1260000) and only bounds the whole run.
 
 ## Decomposition rules
 

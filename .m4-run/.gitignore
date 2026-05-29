@@ -1,0 +1,5 @@
+# run outputs (scratch, regenerable) — keep only harness scripts + findings docs
+*.result.json
+*.err
+*.jsonl
+*.args.json

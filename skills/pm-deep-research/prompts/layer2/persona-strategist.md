@@ -76,7 +76,7 @@ For every enum field output exactly one allowed value; never invent synonyms. Fo
 - Filter weak/irrelevant/duplicated/low-quality results; do not auto-include everything.
 - **Copy provenance fields verbatim from the search tool result with NO paraphrasing, shortening, reformatting, translation, normalisation, or modification of any kind.** The validator does a byte-equal comparison and rejects the entire output if any character differs. Covered fields: `id`, `source_title`, `url`, `provider`, `query`, `snippet`, `summary`, `published_at`, `retrieved_at`. If a provenance field looks low quality, prefer omitting that evidence item rather than rewriting it.
 - You may set interpretive fields: `supports_findings`, `source_type`, `confidence`.
-- Every selected evidence item must be cited by at least one finding's `evidence_refs`; `supports_findings` must match those finding ids.
+- **Bidirectional citation invariant** (the validator rejects the entire aspect on any mismatch — observed failure code `supports_findings_mismatch`): for every evidence item, `supports_findings` must list **exactly** the finding ids whose `evidence_refs` include that evidence id — no missing, no extra, consistent in both directions. Before returning, re-check: every `evidence_refs` entry points to an existing evidence id, and every evidence's `supports_findings` equals the set of findings that cite it.
 - Contradictory sources go in `counterarguments` and `contradicted_by`; unsupported but useful ideas go in `assumptions` or `open_questions`, never in high-confidence findings.
 
 ## Execution rules
