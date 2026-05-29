@@ -9,4 +9,5 @@
 ## 当前
 - `phase1-method-decisions.md`（含 Review）✅ Phase 1 完成。
 - `phase1-review.md` ✅ 阶段 review。
-- `phase2-spec-and-orchestration.md` 🚧 Phase 2 计划（草稿，待 Heye 过目后执行 WS1）：合并为权威竞品规格 + 评测 rubric + 黄金样例 + Layer1↔Lapis 接口。
+- `phase2-spec-and-orchestration.md` ✅ Phase 2 完成并签收（含审计第一轮）：权威竞品规格 + rubric + 黄金样例(23/24) + Layer1↔Lapis 接口。
+- `phase3-skill-orchestration.md` 🚧 Phase 3 计划（草稿，待 Heye 对齐 D1/D2/D3 后开工）：人格/编排 prompt 资产 + 13 章报告装配 + skill 入口 + 端到端验证 = v2.0。
