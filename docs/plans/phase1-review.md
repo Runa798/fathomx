@@ -24,11 +24,11 @@
 
 **结论：Phase 1 方法论层面无阻塞，具备进入 Phase 2（业务需求规格打磨 + 评测标尺）的条件。**
 
-## 留待 Heye 拍板的产品判断（不阻塞 Phase 1，但影响 Phase 2/3）
+## 产品判断 — ✅ 已确认（2026-05-29，见 [ADR-0006](../decisions/0006-phase1-method-decisions.md)）
 
-1. 竞争五维与通用 MECE-6 的分层关系（建议：五维=竞品能力报告骨架，MECE-6=跨能力顶层）。
-2. 研究人格最终数量与集合（建议：Experience Analyst + Strategist + 跨人格质量门；Market/CI 是否保留待首攻能力定）。
-3. 无一手问卷时，ODI 的 Importance/Satisfaction 是否允许用研究证据/市场代理估算 + TM-4 显式标注证据等级。
+1. ✅ 竞争五维=竞品报告骨架，MECE-6=跨能力顶层（分层关系）。
+2. ✅ 2 核心人格（Experience Analyst + Strategist）+ 跨人格质量门；Market/CI 不强制保留，最终数量 Phase 3 定。
+3. ✅ 无一手问卷时 ODI 允许用研究证据/市场代理估算 + TM-4 标注证据等级。
 
 ## 对 ROADMAP 的回写
 

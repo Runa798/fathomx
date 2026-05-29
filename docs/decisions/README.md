@@ -10,3 +10,4 @@
 - [ADR-0003](0003-first-capability-competitive.md) — 首攻能力 = 竞品深度研究 (2026-05-29)
 - [ADR-0004](0004-public-oss-distribution.md) — 分发范围 = 公开 OSS (2026-05-29)
 - [ADR-0005](0005-agpl-license.md) — 许可证 = AGPL-3.0 (2026-05-29)
+- [ADR-0006](0006-phase1-method-decisions.md) — Phase 1 方法论确认：竞争五维/MECE-6 分层 · 2 人格+质量门 · ODI 可估算 (2026-05-29)
