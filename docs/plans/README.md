@@ -7,4 +7,6 @@
 计划文件建议结构：目标 / 输入 / 任务分解 / 产出物 / 退出标准 / 风险 / （完成后）Review。
 
 ## 当前
-- 尚无细化计划。下一步：Phase 1 启动时创建 `phase1-method-decisions.md`（含 ROADMAP §3 草拟的 5 个决策驱动问题）。
+- `phase1-method-decisions.md`（含 Review）✅ Phase 1 完成。
+- `phase1-review.md` ✅ 阶段 review。
+- `phase2-spec-and-orchestration.md` 🚧 Phase 2 计划（草稿，待 Heye 过目后执行 WS1）：合并为权威竞品规格 + 评测 rubric + 黄金样例 + Layer1↔Lapis 接口。
