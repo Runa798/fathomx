@@ -66,5 +66,6 @@
 
 ## 锚点与待办
 - ✅ WS3 黄金样例（[`golden/running-coach-ai-upgrade.md`](golden/running-coach-ai-upgrade.md)，Strava / AI 升级方向）实测自评 **22/24**（floor 全过；行文 floor 过——已按 §7.4 改写为论点先行的专家叙事；ODI 已数值化）。**交叉审计（Codex+subagent）后诚实降分**：B3=1（能力矩阵符号化、无 per-cell 证据 id）、C1=1（视觉 URL 指针非实图）。此即"专家级参考产出"的评分锚点。
+- ✅ **Phase 3 M4 引擎实跑验证（2026-05-30）**：同一课题用 Lapis deep_research 真引擎 + 人格 prompt 端到端产出（`.m4-run/golden-report-strava.md`，打分见 `.m4-run/m4-rubric-score.md`）= **22/24**，与手写样例同分但 **B3 1→2（提升）**——能力矩阵每格带 `evidence_refs`/`assumption`/`falsifiable_test`，证明 per-cell 证据可由 prompt 强制承载、不必人手补。扣分仅 A4=1（build-cost aspect 仅 2 证据，`max_search_calls=2` 预算所致）+ C1=1（视觉 3<5）；均非方法缺陷。**价值主张未被证伪：引擎产出在 A 组/B3 上系统性远超普通 LLM 基线。**
 - [ ] Phase 3 把 floor（含行文 floor）做成 skill 内的自动 quality-gate（verification chain）。
-- [ ] 改进点：B3（能力矩阵每格加 per-cell 证据 id 或标假设）、C1（Deep 模式实抓 ≥5 截图）、竞品完整版本时间线（把 Ch6 的"节奏判断"升级为定量 build-cost）。
+- 改进点进度：B3 ✅（引擎已 per-cell 证据）；竞品版本时间线 ✅（build-cost-version-history aspect 已产 datable 版本线 + 定量 build-cost 区间）；**C1 仍待办**（Deep 模式实抓 ≥5 截图，需 Skill 层 Layer-2，与引擎无关）；A4 待办（关键 aspect `max_search_calls` 提到 3–4 回补来源数）。
