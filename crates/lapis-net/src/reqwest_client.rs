@@ -32,11 +32,11 @@ const MAX_DEBUG_EXCERPT_BYTES: usize = 256;
 // reasoning models (e.g. gpt-5.5 via the Responses API, stream:true) emit one
 // SSE delta per token plus reasoning events, so a long deep-research synthesis
 // turn easily exceeds a 4096-event cap and aborts with "SSE stream exceeded
-// event limit". Raised to give deep synthesis headroom; the total-data guard
-// (below) still bounds runaway streams.
+// event limit". Only the event count is raised; the total-data guard keeps its
+// upstream value (deep synthesis peaked at ~1.5 MB, well under it).
 const MAX_SSE_EVENTS: usize = 65536;
 const MAX_SSE_DATA_BYTES: usize = MAX_WIRE_BODY_BYTES;
-const MAX_SSE_TOTAL_DATA_BYTES: usize = 64 * 1024 * 1024;
+const MAX_SSE_TOTAL_DATA_BYTES: usize = 8 * 1024 * 1024;
 const SSE_EVENT_CHANNEL_CAPACITY: usize = 32;
 
 pub struct ReqwestNetworkClient {
