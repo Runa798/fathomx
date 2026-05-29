@@ -1,16 +1,16 @@
-# Lapis 迁移审计报告：FathomX → Lapis 架构
+# Lapis 迁移审计报告：FathomX→ Lapis 架构
 
 > 审计日期: 2026-05-21
 > 审计方: Opus (架构级) + Codex/GPT-5.5 (代码级) 交叉审计
-> 对象: Lapis Research Agent 产品文档 vs FathomX v1.2.0 现有实现
+> 对象: Lapis Research Agent 产品文档 vs PM DeepResearch v1.2.0 现有实现
 
 ---
 
 ## 1. 核心结论
 
-FathomX 现状不是 Lapis 目标中的"三层 Rust MCP + Rust 侧 multi-turn agent tool-call loop"。它当前是 **Layer 1 Claude Code Skill 驱动的研究工作流**，Python 只承担若干批处理任务。真正的规划、搜索循环、Gap 迭代、最终综合大多存在于 `skill/references/*.md` 的操作规程中，而不是可执行编排代码中。
+PM DeepResearch 现状不是 Lapis 目标中的"三层 Rust MCP + Rust 侧 multi-turn agent tool-call loop"。它当前是 **Layer 1 Claude Code Skill 驱动的研究工作流**，Python 只承担若干批处理任务。真正的规划、搜索循环、Gap 迭代、最终综合大多存在于 `skill/references/*.md` 的操作规程中，而不是可执行编排代码中。
 
-Lapis 迁移的关键不是逐文件翻译 Python，而是把 FathomX 中"文档化但未代码化"的业务规则，注入 Rust 侧的 `planner`、`agent_loop`、`specialist`、`judge` 与 schema 中。
+Lapis 迁移的关键不是逐文件翻译 Python，而是把 PM DeepResearch 中"文档化但未代码化"的业务规则，注入 Rust 侧的 `planner`、`agent_loop`、`specialist`、`judge` 与 schema 中。
 
 推荐 **分阶段混合迁移，目标收敛到原生 Lapis 架构**。
 
@@ -18,7 +18,7 @@ Lapis 迁移的关键不是逐文件翻译 Python，而是把 FathomX 中"文档
 
 ## 2. 架构层级映射
 
-| Lapis 组件 | Lapis 位置 | FathomX 对应 | 状态 |
+| Lapis 组件 | Lapis 位置 | PM DeepResearch 对应 | 状态 |
 |---|---|---|---|
 | Layer 1: Orchestration | Claude Code Skill | `skill/SKILL.md` + `references/*.md` | 存在且更丰富 |
 | Layer 1 任务拆解 | Skill | `methodology.md` §1 (MECE 6-dim) | 存在，更结构化 |
@@ -41,34 +41,34 @@ Lapis 迁移的关键不是逐文件翻译 Python，而是把 FathomX 中"文档
 
 ### 差异 1: Agent 执行模型 (Critical)
 
-**FathomX**: Python task 是单次调用 (一个 prompt → 一个 response)
+**PM DeepResearch**: Python task 是单次调用 (一个 prompt → 一个 response)
 **Lapis**: Rust Agent 运行 multi-turn tool-call loop (搜索→推理→再搜索→判断停止)
 
-Lapis Agent 可自主决定搜多少、搜什么。FathomX 依赖 Claude (Layer 1) 手动编排所有步骤。
+Lapis Agent 可自主决定搜多少、搜什么。PM DeepResearch 依赖 Claude (Layer 1) 手动编排所有步骤。
 
 ### 差异 2: 搜索在不同层
 
-**FathomX**: Claude 主模型直调 Grok/Exa MCP → 搜索是 Layer 1 的事
+**PM DeepResearch**: Claude 主模型直调 Grok/Exa MCP → 搜索是 Layer 1 的事
 **Lapis**: Agent 通过 Rust SearchProvider → 搜索是 Layer 2/3 的事
 
 ### 差异 3: MCP 协议 vs Bash exec
 
-**FathomX**: `python3 -m fathomx run search_extract --workspace ...` 靠 exit code + 文件
+**PM DeepResearch**: `python3 -m fathomx run search_extract --workspace ...` 靠 exit code + 文件
 **Lapis**: 4 个 MCP tool (research_plan, deep_research, aspect_research, compare_reports)
 
 ### 差异 4: 复杂度路由 (互补)
 
-FathomX 有 Quick/Standard/Deep 3 级路由，Lapis 有广度/深度/平衡 3 种模式。可组合。
+PM DeepResearch 有 Quick/Standard/Deep 3 级路由，Lapis 有广度/深度/平衡 3 种模式。可组合。
 
-### 差异 5: 结构化方法论 (FathomX 独有)
+### 差异 5: 结构化方法论 (PM DeepResearch 独有)
 
-MECE 6 维、3 人格、Gap 迭代 — Lapis 只说"split into aspects"不规定方法论。这是 FathomX 的产品核心。
+MECE 6 维、3 人格、Gap 迭代 — Lapis 只说"split into aspects"不规定方法论。这是 PM DeepResearch 的产品核心。
 
 ---
 
-## 4. FathomX 业务层 → Lapis 注入点
+## 4. PM DeepResearch 业务层 → Lapis 注入点
 
-| 业务能力 | FathomX 来源 | Lapis 注入位置 |
+| 业务能力 | PM DeepResearch 来源 | Lapis 注入位置 |
 |---|---|---|
 | 复杂度路由 (Q/S/D) | `SKILL.md` Step 1 | Layer 1 Skill + `research_plan` 返回 `ResearchTier` |
 | MECE 6 维扩展 | `methodology.md` §1 | `prompts/layer1/task-decomposition.md` + `src/orchestrator/planner.rs` |
@@ -138,7 +138,7 @@ MECE 6 维、3 人格、Gap 迭代 — Lapis 只说"split into aspects"不规定
 
 ## 6. Lapis 开放问题回答
 
-| 问题 | FathomX 实践回答 |
+| 问题 | PM DeepResearch 实践回答 |
 |---|---|
 | 任务拆分规则配置化？ | 不要。放 prompt 文件，版本化管理 |
 | MVP 用户选模型？ | 按 tier 选（不是按单次搜索选 provider） |

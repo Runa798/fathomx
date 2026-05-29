@@ -3,7 +3,7 @@
 > Status: 草稿（待 Phase 1 启动时细化）。产出 = `docs/research/` 下的方法决策文档。
 
 ## 目标
-为 fathomx 找到**真实可借鉴、科学**的方法论，回答下列**决策驱动问题**——每个产出"选定方法 + 依据(文献/真实实践案例) + 在 fathomx 的落地点"。**不是写文献综述**。
+为 PM DeepResearch 找到**真实可借鉴、科学**的方法论，回答下列**决策驱动问题**——每个产出"选定方法 + 依据(文献/真实实践案例) + 在 PM DeepResearch 的落地点"。**不是写文献综述**。
 
 两大支柱，**产品方法论是目的，AI/编排方法论是手段**：
 - **Track B｜产品专家真实方法论**（定义"好的产品研究产出长什么样"）—— 驱动 MECE 维度、报告结构、机会矩阵、"产品专家视角"。
@@ -41,7 +41,7 @@
 - A1/A2 → 保证上述产出**可信、可追溯、低幻觉**。
 
 ## 研究方法
-- dogfooding：用 fathomx/Lapis 自身工具(grok/exa、deep_research) + 必要时 Layer 2 浏览器抓权威页/案例。
+- dogfooding：用 PM DeepResearch/Lapis 自身工具(grok/exa、deep_research) + 必要时 Layer 2 浏览器抓权威页/案例。
 - 跨模型交叉(Claude/Codex/subagent)验证关键方法可信度。
 
 ## 退出标准

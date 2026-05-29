@@ -1,4 +1,4 @@
-# FathomX 文档地图
+# PM DeepResearch 文档地图
 
 > **单一事实源原则**：本项目的计划、决策、规格、进度以 **repo 内文档**为准，不依赖会话记忆。任何计划/决策/进度变更，先落到这里的文档，再在别处引用。
 
@@ -23,8 +23,8 @@
 **Lapis 引擎（上游 `4o3F/Lapis`，AGPL-3.0）**
 - `architecture.md`、`configuration.md`、`development.md`、`mcp-usage.md` — 引擎自身架构/配置/开发/MCP API
 
-**FathomX 业务层（本项目自有）**
-- `specs/fathomx-competitive-research-spec.md` — **竞品深度研究业务需求规格（canonical · v2.0）**，Phase 2 WS1 合并 3 份草稿而成，单一事实源
+**PM DeepResearch 业务层（本项目自有）**
+- `specs/pm-deep-research-competitive-research-spec.md` — **竞品深度研究业务需求规格（canonical · v2.0）**，Phase 2 WS1 合并 3 份草稿而成，单一事实源
 - `lapis-migration-audit.md` — 迁移审计（Opus+Codex 交叉）
 - `prompt-engineering-academic-foundations.md` — 提示词工程学术依据（Phase 1 相关）
 - `research-agent-product.md` — 研究 agent 产品说明

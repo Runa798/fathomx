@@ -7,7 +7,7 @@ version: 0.1.0
 # PM DeepResearch — Competitive Deep Research Skill
 
 > Status: Phase 3 WIP (M1). This is the specialized FathomX→**PM DeepResearch** competitive-research skill (decision D1). It consumes the upstream Lapis MCP core unchanged (interface §6) and carries the product methodology via prompt assets + Skill-layer assembly.
-> Canonical spec: [`../../docs/specs/fathomx-competitive-research-spec.md`](../../docs/specs/fathomx-competitive-research-spec.md). Interface: [`../../docs/specs/orchestration-interface.md`](../../docs/specs/orchestration-interface.md). Rubric: [`../../docs/evaluation/rubric.md`](../../docs/evaluation/rubric.md).
+> Canonical spec: [`../../docs/specs/pm-deep-research-competitive-research-spec.md`](../../docs/specs/pm-deep-research-competitive-research-spec.md). Interface: [`../../docs/specs/orchestration-interface.md`](../../docs/specs/orchestration-interface.md). Rubric: [`../../docs/evaluation/rubric.md`](../../docs/evaluation/rubric.md).
 
 ## Purpose
 

@@ -1,6 +1,6 @@
 # 深度研究 Prompt Engineering 学术依据
 
-本文档整理了支撑 FathomX/Lapis 方法论设计的学术研究和最佳实践，聚焦三个核心领域：
+本文档整理了支撑 PM DeepResearch/Lapis 方法论设计的学术研究和最佳实践，聚焦三个核心领域：
 1. MECE 6 维度范围扩展
 2. 三研究人格及其系统提示词
 3. Gap 驱动迭代
@@ -40,7 +40,7 @@
 **Meta-Prompting** — arXiv: 2401.12954
 - 结合高层规划、动态人格分配、多 Agent 协调的任务无关脚手架
 - 核心思想：一个"元"控制器动态决定需要哪些专家角色，按需调用
-- 与 FathomX 的 Orchestration Layer 调度逻辑高度契合
+- 与 PM DeepResearch 的 Orchestration Layer 调度逻辑高度契合
 
 ### 1.2 认知多样性的理论基础
 
@@ -54,9 +54,9 @@
 
 **Delphi Technique** — Rowe & Wright, 2001, International Journal of Forecasting
 - 聚合独立专家判断比单专家方法产生更稳健的综合结论
-- 与 FathomX 三人格独立分析→综合合成的模式直接对应
+- 与 PM DeepResearch 三人格独立分析→综合合成的模式直接对应
 
-### 1.3 对 FathomX 三人格的启示
+### 1.3 对 PM DeepResearch 三人格的启示
 
 | 学术发现 | 当前设计 | 优化建议 |
 |--------|--------|--------|
@@ -102,9 +102,9 @@ Grok 搜索返回的学术文献指出：
 **Enterprise Deep Research (EDR)** — arXiv: 2510.17797
 - 企业级多 Agent 深度研究框架
 - 提出"可引导的上下文工程"（steerable context engineering）
-- 支持人类在研究过程中调整方向——与 FathomX 的决策意图输入对应
+- 支持人类在研究过程中调整方向——与 PM DeepResearch 的决策意图输入对应
 
-### 2.4 对 FathomX 6 维度的启示
+### 2.4 对 PM DeepResearch 6 维度的启示
 
 | 学术发现 | 当前设计 | 优化建议 |
 |--------|--------|--------|
@@ -139,7 +139,7 @@ Grok 搜索返回的学术文献指出：
 - 同一个 LLM 评估自己的输出，生成结构化反馈，据此修改
 - 实证：GSM8K 从 74.0% → 80.5%，HumanEval pass@1 +6.7pp，平均绝对提升 5-8 分
 - 关键：循环有终止条件——批判信号无进一步修改需求，或达到最大迭代次数
-- **直接对应** FathomX 的 Gap 检测 → 补充搜索 → 再检测循环
+- **直接对应** PM DeepResearch 的 Gap 检测 → 补充搜索 → 再检测循环
 
 ### 3.2 深度研究代理的验证框架
 
@@ -148,19 +148,19 @@ Grok 搜索返回的学术文献指出：
 - 构建了 **DRA 失败分类学**（Deep Research Agent Failure Taxonomy）：5 大类，13 子类
 - 验证器在元评估 F1 上超过 vanilla agent-as-judge **12-48%**
 - 核心思想：验证比生成简单（验证的不对称性），利用这一点做推理时自进化
-- **高度相关**：FathomX 的 6 项 Gap 检查可参考此分类学细化
+- **高度相关**：PM DeepResearch 的 6 项 Gap 检查可参考此分类学细化
 
 **DeepTRACE** — arXiv: 2509.04499（ICLR 2026 Poster，已录用；Microsoft Research）
 - 审计框架：对深度研究 AI 系统进行**8 维度评分**
 - 将答案分解为语句级别，逐条检查引用支撑
 - 构建引用矩阵和事实支持矩阵
 - 发现：现有系统（GPT-4.5/5, Perplexity, Gemini 等）经常产生**单面性、过度自信**的回答
-- 启示：FathomX 的来源可信度评级 + 矛盾标注是正确方向
+- 启示：PM DeepResearch 的来源可信度评级 + 矛盾标注是正确方向
 
 **ResearchRubrics** — arXiv: 2511.07685（ICLR 2026 Poster，已录用；Scale AI）
 - 为评估深度研究代理设计的提示词和评分标准基准
 - 覆盖多步推理、跨文档综合、证据推理
-- 可作为 FathomX 输出质量评估的参考框架
+- 可作为 PM DeepResearch 输出质量评估的参考框架
 
 **DeepResearch Bench** — arXiv: 2506.11763（ICLR 2026 Poster，已录用）
 - 首个全面的深度研究代理基准测试
@@ -176,11 +176,11 @@ Grok 搜索返回的学术文献指出：
 **The AI Scientist** — Lu et al., 2024, Sakana AI
 - 全自动科学发现流程：想法生成 → 实验执行 → 论文撰写 → **审稿人-改进者迭代循环**
 - 审稿人明确检查覆盖缺口和方法论弱点
-- 与 FathomX 的 Gap 检测逻辑同构
+- 与 PM DeepResearch 的 Gap 检测逻辑同构
 
 **Agent Laboratory** — Schmidgall et al., 2025
 - 扩展了覆盖验证模块：将生成的文献综述**与种子语料库对比**，覆盖不足则触发新一轮搜索-改进迭代
-- 直接对应 FathomX 的"来源数量"+"来源多样性"检查
+- 直接对应 PM DeepResearch 的"来源数量"+"来源多样性"检查
 
 **WebThinker** — arXiv: 2504.21776
 - 赋予大型推理模型（LRM）深度研究能力
@@ -197,7 +197,7 @@ Grok 搜索返回的学术文献指出：
 - 角色扮演多 Agent 社会通过反复的跨 Agent 批判发现研究问题的未覆盖方面
 - 支持"不同视角的碰撞能发现单一视角的盲点"
 
-### 3.5 对 FathomX Gap 检测的启示
+### 3.5 对 PM DeepResearch Gap 检测的启示
 
 | 学术发现 | 当前设计 | 优化建议 |
 |--------|--------|--------|
@@ -213,7 +213,7 @@ Grok 搜索返回的学术文献指出：
 4. 事实性失败（幻觉、错误引用）
 5. 格式/表达失败（结构混乱、冗余）
 
-FathomX 当前 6 项检查覆盖了类别 1（来源数量/多样性）、3（矛盾解决）、4（事实基础），可考虑增加对类别 2（推理质量）的检查。
+PM DeepResearch 当前 6 项检查覆盖了类别 1（来源数量/多样性）、3（矛盾解决）、4（事实基础），可考虑增加对类别 2（推理质量）的检查。
 
 ---
 

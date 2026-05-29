@@ -1,7 +1,7 @@
-# FathomX 竞品深度研究 — 评测 Rubric（WS2）
+# PM DeepResearch 竞品深度研究 — 评测 Rubric（WS2）
 
 > Status: Phase 2 WS2 产出（2026-05-29，草稿待评审）。
-> 目的：把「可信度远超普通 LLM」变成**可打分、可证伪**的标尺。规格 [`../specs/fathomx-competitive-research-spec.md`](../specs/fathomx-competitive-research-spec.md) 本身须通过本 rubric（自评 = Phase 2 退出标准之一）；黄金样例 [`golden/`](golden/) 是 rubric 的参考锚点。
+> 目的：把「可信度远超普通 LLM」变成**可打分、可证伪**的标尺。规格 [`../specs/pm-deep-research-competitive-research-spec.md`](../specs/pm-deep-research-competitive-research-spec.md) 本身须通过本 rubric（自评 = Phase 2 退出标准之一）；黄金样例 [`golden/`](golden/) 是 rubric 的参考锚点。
 > 借鉴：**DeepTRACE 8 维**（arXiv 2509.04499）、**ResearchRubrics**（2511.07685）、**FActScore**（2305.14251）、**CiteEval**；竞品专属维来自本项目 Track B。
 
 ---
@@ -13,7 +13,7 @@
 - **硬门槛（floor）**：标 ⛔ 的维度**必须 ≥1**，任一为 0 即整体不通过（不论总分）。这些对应规格 §9.2 quality floor。
 - **行文 floor（expert prose）**：报告须满足规格 §7.4 行文规范——论点先行、标题即论点、表格作证据而非论证本身、按主题综合。**机械堆砌表格 / 无论点流水账即使各维分够也判不通过**（"易读"是北极星三值之一，不是可选项）。
 - 通过线：**floor 全过 且 总分 ≥ 18/24（75%）**；黄金样例参考产出应 ≥ 22/24。
-- 每维同时给出**普通 LLM 基线**——这是"远超"要拉开的差距，也是可证伪点：若 FathomX 产出与基线无差，则证伪了价值主张。
+- 每维同时给出**普通 LLM 基线**——这是"远超"要拉开的差距，也是可证伪点：若 PM DeepResearch 产出与基线无差，则证伪了价值主张。
 
 ---
 
@@ -59,7 +59,7 @@
 | 总分 | ≥ 18 / 24 通过；黄金参考产出目标 ≥ 22 / 24 |
 | 一票否决 | 出现**捏造来源/案例/统计**（先验真伪失败）→ 直接判 0，整体不通过（对应 [`citation-audit`](../research/citation-audit.md) 纪律）|
 
-> **可证伪性声明**：把同一课题交给"普通 LLM 单次作答"，按本 rubric 打分应显著落在通过线下（预期 floor 多项为 0：无视觉证据、无 tier、无 ODI、捏造案例）。FathomX 产出若不能在 A 组（可信度）+ C1（视觉）+ B3（证据矩阵）上系统性拉开差距，则**价值主张被证伪**——这正是黄金样例要验证的。
+> **可证伪性声明**：把同一课题交给"普通 LLM 单次作答"，按本 rubric 打分应显著落在通过线下（预期 floor 多项为 0：无视觉证据、无 tier、无 ODI、捏造案例）。PM DeepResearch 产出若不能在 A 组（可信度）+ C1（视觉）+ B3（证据矩阵）上系统性拉开差距，则**价值主张被证伪**——这正是黄金样例要验证的。
 
 ## 5. 规格自评（Phase 2 退出用）
 规格本身不是一份报告，故按"规格是否**强制**了上述每一维"自评：每维问"规格有没有把它写成硬要求 + 给了落地机制？"全部为"是"即规格通过自评。WS3 黄金样例则用完整 12 维实测一次。

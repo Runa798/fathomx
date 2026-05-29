@@ -6,7 +6,7 @@
 
 ## 索引
 - [ADR-0001](0001-adopt-lapis-engine.md) — 采纳 Lapis 三层 Rust 引擎作基座 (2026-05-21)
-- [ADR-0002](0002-fathomx-lapis-decoupled.md) — fathomx 与 Lapis 解耦 + 后期一键安装 (2026-05-29)
+- [ADR-0002](0002-pm-deep-research-lapis-decoupled.md) — PM DeepResearch 与 Lapis 解耦 + 后期一键安装 (2026-05-29)
 - [ADR-0003](0003-first-capability-competitive.md) — 首攻能力 = 竞品深度研究 (2026-05-29)
 - [ADR-0004](0004-public-oss-distribution.md) — 分发范围 = 公开 OSS (2026-05-29)
 - [ADR-0005](0005-agpl-license.md) — 许可证 = AGPL-3.0 (2026-05-29)

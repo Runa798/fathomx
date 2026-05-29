@@ -1,4 +1,4 @@
-# FathomX — 产品与技术架构文档
+# PM DeepResearch — 产品与技术架构文档
 
 > 版本: v1.2.0 (当前) → v1.3.0 (规划中)
 > 日期: 2026-05-21
@@ -8,11 +8,11 @@
 
 ## 1. 产品定位
 
-FathomX 是一个 Claude Code Skill，面向**专业产品经理和运营专家**，将多模型编排与产品研究方法论融合为一套完整的深度调研系统。
+PM DeepResearch 是一个 Claude Code Skill，面向**专业产品经理和运营专家**，将多模型编排与产品研究方法论融合为一套完整的深度调研系统。
 
 ### 1.1 核心价值主张
 
-| 维度 | 竞品（ChatGPT Deep Research / Perplexity） | FathomX |
+| 维度 | 竞品（ChatGPT Deep Research / Perplexity） | PM DeepResearch |
 | ---- | ---- | ---- |
 | 研究方法论 | 无结构化方法论 | MECE 6维 + 3研究人格 + Gap迭代 |
 | 工具精准度 | 单一搜索引擎 | Grok + Exa + Gemini + Browser 四层 |
@@ -53,7 +53,7 @@ graph TB
     end
 
     subgraph Claude["Claude Code 主进程 (STRATEGIC)"]
-        SKILL[FathomX Skill]
+        SKILL[PM DeepResearch Skill]
         ROUTER[复杂度路由器]
         SCOPE[范围扩展引擎]
         GAP[Gap 检测器]
@@ -81,7 +81,7 @@ graph TB
     end
 
     subgraph Config["配置层"]
-        CFG[~/.fathomx/config.json]
+        CFG[~/.pm-deep-research/config.json]
         ENV[环境变量 / CLI 检测]
     end
 
@@ -361,7 +361,7 @@ graph TD
         R3 -->|是| C3[Grok/Exa 搜索可用]
         R4 -->|是| C4[Python httpx 降级可用]
         R1 -->|否| C5[用 Subagent 替代]
-        C1 --> CFG[~/.fathomx/config.json]
+        C1 --> CFG[~/.pm-deep-research/config.json]
         C5 --> CFG
     end
 
@@ -555,7 +555,7 @@ flowchart TD
 
 ```mermaid
 gantt
-    title FathomX 版本路线图
+    title PM DeepResearch 版本路线图
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
 
@@ -605,6 +605,6 @@ gantt
 | 3 | 搜索 agent 实现 | CC Subagent (haiku) | 共享 MCP 工具，零额外配置 |
 | 4 | 分析任务实现 | Codex CLI (gpt-5.5) | 不需要 MCP，纯文本处理，可真并行 |
 | 5 | IPC 方式 | Workspace 文件系统 | 可靠、可恢复、可追溯 |
-| 6 | 配置存储 | ~/.fathomx/config.json | 全局用户级，权限 0600 |
+| 6 | 配置存储 | ~/.pm-deep-research/config.json | 全局用户级，权限 0600 |
 | 7 | 框架 | 无 (不用 LangChain/CrewAI) | 是 CC Skill 不是独立 agent |
 | 8 | Context 压缩 | 55% 保留率，35% 硬底线 | Chen et al. 2025 研究 |

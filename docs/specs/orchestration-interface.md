@@ -1,7 +1,7 @@
 # Layer1 ↔ Lapis 编排接口（WS4）
 
 > Status: Phase 2 WS4 产出（2026-05-29，草稿待评审）。
-> 目的：把 [`fathomx-competitive-research-spec.md`](fathomx-competitive-research-spec.md) 的工作流落到 **Lapis 真实 MCP 接口**（依据 [`../mcp-usage.md`](../mcp-usage.md)），明确每步谁做、传什么、schema 缺口怎么补。
+> 目的：把 [`pm-deep-research-competitive-research-spec.md`](pm-deep-research-competitive-research-spec.md) 的工作流落到 **Lapis 真实 MCP 接口**（依据 [`../mcp-usage.md`](../mcp-usage.md)），明确每步谁做、传什么、schema 缺口怎么补。
 
 ---
 
@@ -16,7 +16,7 @@
 | aspect report 带 `dimension/persona/decision_intent/visual_evidence/user_jobs/gap_status` | Lapis `AspectReport` 只有 `findings/assumptions/risks/counterarguments/open_questions/confidence/limitations` | 产品结构字段**当前无 schema 位**，v2.0 用 prompt+Skill 编码承载（见 §3）|
 | evidence 有 `tier/credibility A-E/visual` | Lapis `Evidence` 有 `source_type`(7 枚举) + `confidence`(low/med/high) | 4-tier 与视觉证据由 **Skill 映射/装配**（见 §4）|
 
-**结论**：v2.0 **不改 Lapis 源码**——FathomX 作为 Skill 消费上游 Lapis 原样接口；产品方法论（五维/人格/证据完整性）通过 **`aspect_agent_prompt` 注入 + Skill 层装配**实现。可选的 Rust schema 小幅扩展留 Phase 3（§6）。
+**结论**：v2.0 **不改 Lapis 源码**——PM DeepResearch 作为 Skill 消费上游 Lapis 原样接口；产品方法论（五维/人格/证据完整性）通过 **`aspect_agent_prompt` 注入 + Skill 层装配**实现。可选的 Rust schema 小幅扩展留 Phase 3（§6）。
 
 ---
 
@@ -107,7 +107,7 @@ Lapis `Evidence.source_type` ∈ `{official, documentation, news, blog, forum, r
 
 ## 6. 引擎边界：第一版不动引擎；schema 扩展作为「需求」提给上游（Heye 2026-05-29 确认）
 
-**引擎不是我们做的**——Lapis 由上游 **4o3F** 维护，FathomX 是消费方（见 [ADR-0002](../decisions/0002-fathomx-lapis-decoupled.md)）。因此：
+**引擎不是我们做的**——Lapis 由上游 **4o3F** 维护，PM DeepResearch 是消费方（见 [ADR-0002](../decisions/0002-pm-deep-research-lapis-decoupled.md)）。因此：
 
 - **v2.0 第一版不碰引擎**：纯 prompt+Skill 承载产品字段（§3），用 [rubric](../evaluation/rubric.md) + 黄金样例实测是否够稳。
 - **后续若实测承载不稳**（agent 不照约定填 claim / 漏视觉证据 / 需机器强校验），把下列 schema 扩展整理成**需求清单提给 4o3F 上游**（我们提需求，不自己改引擎源码）：

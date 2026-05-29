@@ -44,7 +44,7 @@
 ## 4. 任务分解（Work Streams）
 
 ### WS1 · 权威业务需求规格（核心，最大头）
-产出 `docs/specs/fathomx-competitive-research-spec.md`（单一 canonical）。按 §3 清单逐项消解分歧，结构建议：
+产出 `docs/specs/pm-deep-research-competitive-research-spec.md`（单一 canonical）。按 §3 清单逐项消解分歧，结构建议：
 1. 范围与决策驱动定位（竞品深度研究=v2.0；MECE-6 顶层框架）
 2. 复杂度路由（Quick/Standard/Deep）+ 决策意图推断
 3. **竞品研究五维骨架**（B1）：每维=主用方法 + 证据标准 + 报告落点
@@ -108,7 +108,7 @@ WS5（小，已授权）先做 → WS1（基础）→ WS2 与 WS4 可在 WS1 维
 
 ### 做了什么
 1. **WS5 ROADMAP**：标 Phase 2 竞品优先 + 新增 Phase 2′ 规格泛化阶段 + 版本表里程碑。
-2. **WS1 权威规格**（[`specs/fathomx-competitive-research-spec.md`](../specs/fathomx-competitive-research-spec.md)）：合并 3 份草稿，全面对齐 Phase 1（五维骨架/2人格+13TM+质量门/4-tier+展示标签/ODI 完整公式+Kano/证据完整性一等支柱/五维→13章/Gap+quality floor/降级）。**Heye 已认可 4 个合并判断**（人格吸收/可信度细分/五维映射/视觉证据方向）。
+2. **WS1 权威规格**（[`specs/pm-deep-research-competitive-research-spec.md`](../specs/pm-deep-research-competitive-research-spec.md)）：合并 3 份草稿，全面对齐 Phase 1（五维骨架/2人格+13TM+质量门/4-tier+展示标签/ODI 完整公式+Kano/证据完整性一等支柱/五维→13章/Gap+quality floor/降级）。**Heye 已认可 4 个合并判断**（人格吸收/可信度细分/五维映射/视觉证据方向）。
 3. **归档**：3 份草稿移入 `docs/archive/`，统一目录 `specs/`，修全链接。
 4. **WS2 rubric**（[`evaluation/rubric.md`](../evaluation/rubric.md)）：12 维可打分 + floor 硬门槛 + 普通 LLM 基线（可证伪）+ 捏造一票否决。
 5. **WS4 接口**（[`specs/orchestration-interface.md`](../specs/orchestration-interface.md)）：对照 Lapis 真实 MCP。**关键发现**：Lapis 仅 `aspect_research`+`deep_research`，无 `research_plan`/`compare_reports` → 拆解/综合/对比/13章/分级全在 Skill；产品结构字段 v2.0 用 prompt+Skill 承载，不改 Rust（可选扩展留 Phase 3）。

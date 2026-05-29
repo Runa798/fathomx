@@ -4,7 +4,7 @@
 > 来源全部过 [`citation-audit.md`](citation-audit.md)。早期素材见 [`../prompt-engineering-academic-foundations.md`](../prompt-engineering-academic-foundations.md)（已修正捏造引用）；
 > 预算/可信度补差证据见 `_raw/a-verify-and-budget.md`。
 >
-> **定位**：Track A 是「手段」——保证 Track B 的产品研究产出**可信、可追溯、低幻觉**。这是 fathomx「可信度远超普通 LLM」承诺的实现层。
+> **定位**：Track A 是「手段」——保证 Track B 的产品研究产出**可信、可追溯、低幻觉**。这是 PM DeepResearch「可信度远超普通 LLM」承诺的实现层。
 
 ---
 
@@ -38,7 +38,7 @@ Layer1/Layer2 prompts（来源分级与引用规则）+ 可选 Rust schema（机
 
 ### 决策结论
 落地 3 个，优先级从高到低：
-1. **citation-grounding + abstention（宁少但真）**：无可靠来源时**宁可弃权/标"未找到"**，不编。这是 fathomx 最核心的反幻觉姿态，也是本项目第一天就该自我执行的（见 citation-audit 对自身的清洗）。
+1. **citation-grounding + abstention（宁少但真）**：无可靠来源时**宁可弃权/标"未找到"**，不编。这是 PM DeepResearch 最核心的反幻觉姿态，也是本项目第一天就该自我执行的（见 citation-audit 对自身的清洗）。
 2. **verification chain（DeepVerifier rubric 验证器）**：用"验证比生成简单"的不对称性，对深研产出做 rubric 引导的自验证。
 3. **self-consistency / self-refine 的有限迭代**：Gap 检测→补充→再检测，但**有终止条件**（边际收益递减，过多迭代引噪）。
 
