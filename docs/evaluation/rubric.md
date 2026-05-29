@@ -62,6 +62,7 @@
 ## 5. 规格自评（Phase 2 退出用）
 规格本身不是一份报告，故按"规格是否**强制**了上述每一维"自评：每维问"规格有没有把它写成硬要求 + 给了落地机制？"全部为"是"即规格通过自评。WS3 黄金样例则用完整 12 维实测一次。
 
-## 待办
-- [ ] WS3 黄金样例（跑步教练 app）跑完后，回填一次真实评分作为锚点。
+## 锚点与待办
+- ✅ WS3 黄金样例（[`golden/running-coach-ai-upgrade.md`](golden/running-coach-ai-upgrade.md)，跑步教练 app / AI 升级方向）实测自评 **22/24**（floor 全过；扣分在 B3 证据矩阵偏薄、C1 未渲染实图需 Layer 2）。此即"专家级参考产出"的评分锚点。
 - [ ] Phase 3 把 floor 维度做成 skill 内的自动 quality-gate（verification chain）。
+- [ ] 改进点：B3（能力矩阵每格证据加厚）、C1（Deep 模式实抓 ≥5 截图）。

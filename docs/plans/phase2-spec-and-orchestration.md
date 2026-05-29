@@ -104,5 +104,30 @@ WS5（小，已授权）先做 → WS1（基础）→ WS2 与 WS4 可在 WS1 维
 - **黄金样例真实性**：所有引用须过 `citation-audit` 同款核实（先验真伪），严守宁少但真。
 - **ODI 估算可信度**：依赖 TM-4 标注纪律 + Track A 兜底——rubric 重点验证项（ADR-0006 风险延续）。
 
-## Review（完成后追加）
-（待 Phase 2 完成回写）
+## Review（2026-05-29 · 主体完成，待 Heye 确认）
+
+### 做了什么
+1. **WS5 ROADMAP**：标 Phase 2 竞品优先 + 新增 Phase 2′ 规格泛化阶段 + 版本表里程碑。
+2. **WS1 权威规格**（[`specs/fathomx-competitive-research-spec.md`](../specs/fathomx-competitive-research-spec.md)）：合并 3 份草稿，全面对齐 Phase 1（五维骨架/2人格+13TM+质量门/4-tier+展示标签/ODI 完整公式+Kano/证据完整性一等支柱/五维→13章/Gap+quality floor/降级）。**Heye 已认可 4 个合并判断**（人格吸收/可信度细分/五维映射/视觉证据方向）。
+3. **归档**：3 份草稿移入 `docs/archive/`，统一目录 `specs/`，修全链接。
+4. **WS2 rubric**（[`evaluation/rubric.md`](../evaluation/rubric.md)）：12 维可打分 + floor 硬门槛 + 普通 LLM 基线（可证伪）+ 捏造一票否决。
+5. **WS4 接口**（[`specs/orchestration-interface.md`](../specs/orchestration-interface.md)）：对照 Lapis 真实 MCP。**关键发现**：Lapis 仅 `aspect_research`+`deep_research`，无 `research_plan`/`compare_reports` → 拆解/综合/对比/13章/分级全在 Skill；产品结构字段 v2.0 用 prompt+Skill 承载，不改 Rust（可选扩展留 Phase 3）。
+6. **WS3 黄金样例**（[`evaluation/golden/running-coach-ai-upgrade.md`](../evaluation/golden/running-coach-ai-upgrade.md)）：Wide Research 4 子代理并行 + 主会话独立核实承重引用（Strava-Runna 收购/Nature npj 伤病预测 Tier-1/WHOOP Coach 均✅核实）；产出 Strava AI 升级方向专家报告，rubric 自评 **22/24**。
+
+### 退出标准核对
+| 项 | 状态 |
+|---|---|
+| canonical 规格完成、对齐 Phase 1、证据完整性一等支柱 | ✅ |
+| 评测 rubric 定义；规格强制每维（自评通过）| ✅ |
+| ≥1 海外健身黄金课题专家级参考产出 | ✅（22/24）|
+| Layer1↔Lapis 每步接口文档级明确 | ✅ |
+| ROADMAP 加泛化阶段 | ✅ |
+
+### 对 Phase 3 的输入（回写 ROADMAP §3 Phase 3）
+- 接口已定 Skill 侧承载产品结构（无需先改 Rust）→ Phase 3 先落 `prompts/layer1/*` + `prompts/layer2/persona-*.md` 实体文件（按 WS4 §2 映射 + §3 prompt 契约 + §5 预算）。
+- rubric 的 floor 维度 → 做成 skill 内自动 quality-gate。
+- 黄金样例的改进点（B3 证据加厚、C1 实抓截图）= Phase 3 端到端要补的能力。
+
+### 待 Heye 确认
+- 全套 Phase 2 产出（规格/rubric/接口/黄金样例）是否签收，可进 Phase 3？
+- WS4 的"v2.0 不改 Lapis Rust、纯 Skill+prompt 承载产品字段"路线是否认可（影响 Phase 3 是否要碰引擎）。
