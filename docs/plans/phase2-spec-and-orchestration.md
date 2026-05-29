@@ -112,14 +112,14 @@ WS5（小，已授权）先做 → WS1（基础）→ WS2 与 WS4 可在 WS1 维
 3. **归档**：3 份草稿移入 `docs/archive/`，统一目录 `specs/`，修全链接。
 4. **WS2 rubric**（[`evaluation/rubric.md`](../evaluation/rubric.md)）：12 维可打分 + floor 硬门槛 + 普通 LLM 基线（可证伪）+ 捏造一票否决。
 5. **WS4 接口**（[`specs/orchestration-interface.md`](../specs/orchestration-interface.md)）：对照 Lapis 真实 MCP。**关键发现**：Lapis 仅 `aspect_research`+`deep_research`，无 `research_plan`/`compare_reports` → 拆解/综合/对比/13章/分级全在 Skill；产品结构字段 v2.0 用 prompt+Skill 承载，不改 Rust（可选扩展留 Phase 3）。
-6. **WS3 黄金样例**（[`evaluation/golden/running-coach-ai-upgrade.md`](../evaluation/golden/running-coach-ai-upgrade.md)）：Wide Research 4 子代理并行 + 主会话独立核实承重引用（Strava-Runna 收购/Nature npj 伤病预测 Tier-1/WHOOP Coach 均✅核实）；产出 Strava AI 升级方向专家报告，rubric 自评 **23/24**（按 Heye 审计改写为论点先行的专家叙事 + 补 build-cost/版本历史维度，见下「Heye 审计反馈应用」）。
+6. **WS3 黄金样例**（[`evaluation/golden/running-coach-ai-upgrade.md`](../evaluation/golden/running-coach-ai-upgrade.md)）：Wide Research 4 子代理并行 + 主会话独立核实承重引用（Strava-Runna 收购/Nature npj 伤病预测 Tier-1/WHOOP Coach 均✅核实）；产出 Strava AI 升级方向专家报告，rubric 自评 **22/24**（按 Heye 审计改写为论点先行的专家叙事 + 补 build-cost/版本历史维度 + ODI 数值化；交叉审计后 B3 诚实降分，见下「Heye 审计反馈应用」）。
 
 ### 退出标准核对
 | 项 | 状态 |
 |---|---|
 | canonical 规格完成、对齐 Phase 1、证据完整性一等支柱 | ✅ |
 | 评测 rubric 定义；规格强制每维（自评通过）| ✅ |
-| ≥1 海外健身黄金课题专家级参考产出 | ✅（23/24，已按审计改写）|
+| ≥1 海外健身黄金课题专家级参考产出 | ✅（22/24，含交叉审计修订）|
 | Layer1↔Lapis 每步接口文档级明确 | ✅ |
 | ROADMAP 加泛化阶段 | ✅ |
 
@@ -142,4 +142,4 @@ Heye 详细评审给出两条反馈，已应用（保留确认锚点、只改指
 
 2. **黄金样例不能机械堆砌表格，要按"给人读"的专业写法**：维度对，但行文是有专业惯例的 genre。
    - 落地：先 Wide Research 真实优质案例（Stratechery/Built for Mars/Lenny's/McKinsey 行动标题/Minto Pyramid/Amazon 六页备忘录），抽出 12+ 条写法惯例 → 写成规格 **§7.4 行文规范**（论点先行/标题即论点/表格作证据/按主题综合/校准不确定性/收尾给行动）+ rubric **行文 floor**（机械堆砌判不通过）。
-   - 据此**改写黄金样例**为论点先行的专家叙事；顺带应用子代理事实核查：删未核实的 Athlete Intelligence "2025-02 GA"、更正 "Garmin Run Coach"→官方名、区分单独/捆绑定价。自评升 22→**23/24**（B3 因 build-cost 证据补满，唯 C1 实图待 Layer 2）。
+   - 据此**改写黄金样例**为论点先行的专家叙事；顺带应用子代理事实核查：删未核实的 Athlete Intelligence "2025-02 GA"、更正 "Garmin Run Coach"→官方名、区分单独/捆绑定价。第一轮自评 22→23/24；**随后第二轮 Codex+subagent 交叉审计**指出 B3 单元格无 per-cell 证据 id（符号化矩阵），诚实回 **22/24**，并把 Ch9 ODI 数值化（详见 [phase3 计划](phase3-skill-orchestration.md) 审计记录）。

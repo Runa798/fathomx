@@ -6,7 +6,7 @@
 
 下列 3 份是早于 Phase 1 的 AI 生成业务层草稿，与 Phase 1 方法决策（[ADR-0006](../decisions/0006-phase1-method-decisions.md)）有系统性分歧（MECE-6 vs 竞品五维骨架、3+1 人格 vs 2 核心人格、A-E/High-Med-Low vs 4-tier、ODI 简化公式 vs 主排序+Kano）。
 
-Phase 2 WS1 已将三者**合并并对齐**为单一权威规格：[`../specs/fathomx-competitive-research-spec.md`](../specs/fathomx-competitive-research-spec.md)。请以该规格为准。
+Phase 2 WS1 已将三者**合并并对齐**为单一权威规格：[`../specs/pm-deep-research-competitive-research-spec.md`](../specs/pm-deep-research-competitive-research-spec.md)。请以该规格为准。
 
 - `Lapis 业务层补充文档：Product Deep Research 模式.md` — 最完整的母版（13 章报告模板、3+1 人格、visual_evidence、决策意图推断的源头）
 - `fathomx-business-supplement.md` — 11 条补充 + Lapis 开放问题回答

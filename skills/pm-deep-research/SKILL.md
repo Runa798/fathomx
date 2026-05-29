@@ -7,6 +7,7 @@ version: 0.1.0
 # PM DeepResearch — Competitive Deep Research Skill
 
 > Status: Phase 3 WIP (M1). This is the specialized FathomX→**PM DeepResearch** competitive-research skill (decision D1). It consumes the upstream Lapis MCP core unchanged (interface §6) and carries the product methodology via prompt assets + Skill-layer assembly.
+> ⚠️ **NOT YET RUNNABLE (M1).** The Layer-1 prompts (`task-decomposition` / `agent-allocation` / `final-report`) are still pending (WS-B/WS-C). The Workflow below is the **target design**, not yet executable end-to-end — do not invoke this skill until M3. Only the Layer-2 persona prompts are complete.
 > Canonical spec: [`../../docs/specs/pm-deep-research-competitive-research-spec.md`](../../docs/specs/pm-deep-research-competitive-research-spec.md). Interface: [`../../docs/specs/orchestration-interface.md`](../../docs/specs/orchestration-interface.md). Rubric: [`../../docs/evaluation/rubric.md`](../../docs/evaluation/rubric.md).
 
 ## Purpose

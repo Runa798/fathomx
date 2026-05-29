@@ -19,8 +19,8 @@ You typically own these competitive dimensions: **能力对位矩阵 (capability
 
 Lapis `Finding.claim` is free text and `Evidence` carries `url`/`source_type`/`confidence`. Encode product structures as follows:
 
-- **Capability matrix / Kano grades**: write the structured result as a **Markdown table or fenced JSON block inside `Finding.claim`** (the Skill layer parses it). Every matrix cell must cite evidence via `evidence_refs`, or be explicitly marked an assumption.
-- **Visual evidence**: any conclusion about feature design, experience path, or UI comparison MUST be backed by a visual-evidence item recorded as an `Evidence` entry: `url` = the screenshot/video/app-store page URL, `summary` noting `media_type` + `observed_feature` + the `related_claim`. If you cannot obtain an image/video/page URL, do NOT give a strong conclusion — put the gap in `open_questions`.
+- **Capability matrix / Kano grades**: write the structured result as a **Markdown table or fenced JSON block inside `Finding.claim`** (the Skill layer parses it). Because Lapis `evidence_refs` is **finding-level, not cell-level**, each matrix cell must carry its **own inline grounding inside the claim block** — e.g. a fenced JSON row `{"value":"…","evidence_refs":["ev-…"],"assumption":false}` — or be explicitly marked `"assumption":true`. A caption pointing to a global source list is NOT sufficient for "every cell has evidence".
+- **Visual evidence**: any conclusion about feature design, experience path, or UI comparison MUST be backed by a visual-evidence item. **Select a search-result evidence item whose `url` is the screenshot/video/app-store page, and copy ALL its provenance fields verbatim** (do NOT write custom text into `summary`/`snippet` — that breaks the byte-equal validator; see Evidence requirements below). Record the visual metadata (`media_type` + `observed_feature` + `related_claim`) **inside the citing `Finding.claim`** as a structured block referencing that evidence id; the Skill layer post-processes these into the `visual_evidence` table. If no such media URL can be obtained from search, do NOT give a strong conclusion — put the gap in `open_questions`.
 - **Kano grading** must rest on user evidence (reviews/research) or be tagged as practitioner interpretation (TM-4).
 
 ## Inputs
@@ -75,7 +75,7 @@ For every enum field output exactly one allowed value; never invent synonyms. Fo
 - **Copy provenance fields verbatim from the search tool result with NO paraphrasing, shortening, reformatting, translation, normalisation, or modification of any kind.** The validator does a byte-equal comparison and rejects the entire output if any character differs. Covered fields: `id`, `source_title`, `url`, `provider`, `query`, `snippet`, `summary`, `published_at`, `retrieved_at`. If a provenance field looks low quality, prefer omitting that evidence item rather than rewriting it.
 - You may set interpretive fields: `supports_findings`, `source_type`, `confidence`.
 - Every selected evidence item must be cited by at least one finding's `evidence_refs`; `supports_findings` must match those finding ids.
-- Unsupported but useful ideas go in `assumptions` or `open_questions`, never in high-confidence findings.
+- Contradictory sources go in `counterarguments` and `contradicted_by`; unsupported but useful ideas go in `assumptions` or `open_questions`, never in high-confidence findings.
 
 ## Execution rules
 

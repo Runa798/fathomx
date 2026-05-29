@@ -1,6 +1,6 @@
 # PM DeepResearch 竞品深度研究 — 业务需求规格（canonical · v2.0）
 
-> Status: Phase 2 WS1 产出（2026-05-29，草稿待 Heye 评审）。
+> Status: Phase 2 WS1 产出（2026-05-29，已签收；2026-05-29 交叉审计修订）。
 > **单一事实源**：本文件合并并取代早期 3 份草稿（`fathomx-business-supplement.md` / `fathomx-business-input-to-lapis.md` / `Lapis 业务层补充文档：Product Deep Research 模式.md`，已归档 [`docs/archive/`](../archive/)），全面对齐 Phase 1 方法决策。
 > 上游：[ADR-0006](../decisions/0006-phase1-method-decisions.md)、[Track B](../research/track-b-product-methodology.md)、[Track A](../research/track-a-orchestration-credibility.md)、[Phase 2 计划](../plans/phase2-spec-and-orchestration.md)。
 > 引擎接口设计见 [`orchestration-interface.md`](orchestration-interface.md)（WS4）；评测见 [`../evaluation/rubric.md`](../evaluation/rubric.md)（WS2）。
@@ -227,7 +227,8 @@ ADR-0006 决策 2：核心 **2 人格** + **跨人格质量门**。Market/CI Ana
 | related_claim | 支撑的结论 |
 | confidence | high / medium / low |
 
-> **获取路径（WS4 细化）**：纯 API 搜索常拿不到真实截图——Deep 模式下由 Layer 2 浏览器抓取（agent-browser / browser-use 走系统 Chrome）补截图/teardown 帧；获取成本计入预算（§A5）。
+> **获取路径（WS4 细化）**：纯 API 搜索常拿不到真实截图——Deep 模式下由 Layer 2 浏览器抓取（agent-browser / browser-use 走系统 Chrome）补截图/teardown 帧；这是 **Skill 层外部步骤**（非 Lapis aspect agent 能力，aspect agent 只有 `search`），获取成本计入预算（§A5）。
+> **承载机制（重要）**：本表是 **Skill 后处理产物**。底层 Lapis `Evidence` 的 provenance 字段（url/summary/snippet…）保持 **byte-equal 不可改写**；agent 不得把 media_type/observed_feature 写进 `Evidence.summary`，而是写进**引用该证据的 `Finding.claim`** 标注块，Skill 据此装配本表（见 [接口 §3/§4](orchestration-interface.md)）。
 
 ### 6.3 逐声明 provenance + 多层核验
 1. **原子声明核验（FActScore 范式）**：报告关键结论拆成原子声明，逐条对照其引用源核验。
@@ -312,7 +313,7 @@ ADR-0006 决策 2：核心 **2 人格** + **跨人格质量门**。Market/CI Ana
   "target_product": { "name": "", "positioning": "", "core_scenarios": [], "target_users": [] },
   "findings": [],
   "evidence": [
-    { "title": "", "url": "", "source_type": "official|app_store|media|social|forum|video|research|other",
+    { "title": "", "url": "", "source_type": "official|documentation|news|blog|forum|repository|unknown",  // v2.0 仅 Lapis 合法 7 枚举
       "tier": 1, "display_label": "High", "retrieved_at": "YYYY-MM-DD",
       "summary": "", "related_claim": "", "epistemic_status": "evidenced|expert|assumption|speculation" }
   ],
@@ -332,7 +333,8 @@ ADR-0006 决策 2：核心 **2 人格** + **跨人格质量门**。Market/CI Ana
 }
 ```
 
-> `epistemic_status` = TM-4 标注；`tier`/`display_label` = §6.1；`estimated` = ODI 估算标记（§4.3）。Rust schema 的实际扩展为 Phase 3 工作，可选、最小（仅当需机器强校验产品字段）。
+> **本 §8 是 Skill 后处理/装配的视图，不是 Lapis 引擎输出 schema。** v2.0 里 aspect agent 实际只能产出 Lapis 合法的 `source_type` 7 枚举（official/documentation/news/blog/forum/repository/unknown）；早期草稿里的扩展值（app_store/media/social/video/research/other）是 **Skill 映射结果** + [接口 §6](orchestration-interface.md) 提给 4o3F 的**上游需求**，不可作为 aspect 直接输出。
+> `epistemic_status` = TM-4 标注；`tier`/`display_label` = §6.1（Skill 后处理）；`estimated` = ODI 估算标记（§4.3）。Rust schema 的实际扩展为 Phase 3 工作，可选、最小（仅当需机器强校验产品字段）。
 
 ---
 

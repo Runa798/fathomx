@@ -1,6 +1,6 @@
 # PM DeepResearch 竞品深度研究 — 评测 Rubric（WS2）
 
-> Status: Phase 2 WS2 产出（2026-05-29，草稿待评审）。
+> Status: Phase 2 WS2 产出（2026-05-29，已随 Phase 2 签收；2026-05-29 交叉审计修订）。
 > 目的：把「可信度远超普通 LLM」变成**可打分、可证伪**的标尺。规格 [`../specs/pm-deep-research-competitive-research-spec.md`](../specs/pm-deep-research-competitive-research-spec.md) 本身须通过本 rubric（自评 = Phase 2 退出标准之一）；黄金样例 [`golden/`](golden/) 是 rubric 的参考锚点。
 > 借鉴：**DeepTRACE 8 维**（arXiv 2509.04499）、**ResearchRubrics**（2511.07685）、**FActScore**（2305.14251）、**CiteEval**；竞品专属维来自本项目 Track B。
 
@@ -65,6 +65,6 @@
 规格本身不是一份报告，故按"规格是否**强制**了上述每一维"自评：每维问"规格有没有把它写成硬要求 + 给了落地机制？"全部为"是"即规格通过自评。WS3 黄金样例则用完整 12 维实测一次。
 
 ## 锚点与待办
-- ✅ WS3 黄金样例（[`golden/running-coach-ai-upgrade.md`](golden/running-coach-ai-upgrade.md)，Strava / AI 升级方向）实测自评 **23/24**（floor 全过；行文 floor 过——已按 §7.4 改写为论点先行的专家叙事；B3 经"版本历史/build-cost"证据补强至满分；唯一扣分 C1 未渲染实图需 Layer 2）。此即"专家级参考产出"的评分锚点。
+- ✅ WS3 黄金样例（[`golden/running-coach-ai-upgrade.md`](golden/running-coach-ai-upgrade.md)，Strava / AI 升级方向）实测自评 **22/24**（floor 全过；行文 floor 过——已按 §7.4 改写为论点先行的专家叙事；ODI 已数值化）。**交叉审计（Codex+subagent）后诚实降分**：B3=1（能力矩阵符号化、无 per-cell 证据 id）、C1=1（视觉 URL 指针非实图）。此即"专家级参考产出"的评分锚点。
 - [ ] Phase 3 把 floor（含行文 floor）做成 skill 内的自动 quality-gate（verification chain）。
-- [ ] 改进点：C1（Deep 模式实抓 ≥5 截图）；竞品完整版本时间线（把 Ch6 的"节奏判断"升级为定量 build-cost）。
+- [ ] 改进点：B3（能力矩阵每格加 per-cell 证据 id 或标假设）、C1（Deep 模式实抓 ≥5 截图）、竞品完整版本时间线（把 Ch6 的"节奏判断"升级为定量 build-cost）。

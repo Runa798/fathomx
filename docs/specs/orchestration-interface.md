@@ -1,6 +1,6 @@
 # Layer1 ↔ Lapis 编排接口（WS4）
 
-> Status: Phase 2 WS4 产出（2026-05-29，草稿待评审）。
+> Status: Phase 2 WS4 产出（2026-05-29，已随 Phase 2 签收；2026-05-29 交叉审计修订）。
 > 目的：把 [`pm-deep-research-competitive-research-spec.md`](pm-deep-research-competitive-research-spec.md) 的工作流落到 **Lapis 真实 MCP 接口**（依据 [`../mcp-usage.md`](../mcp-usage.md)），明确每步谁做、传什么、schema 缺口怎么补。
 
 ---
@@ -65,7 +65,7 @@ Lapis `Finding.claim` 是自由文本，`finding_type ∈ {fact, interpretation,
 |---|---|
 | `decision_intent` | 写入 `shared_context.summary`，对所有 aspect 可见 |
 | 能力对位矩阵 / Kano / ODI 打分 / 定位 | `aspect_agent_prompt` 要求 agent 把结构化结果作为 **Markdown 表/JSON 块写进 `Finding.claim`**；Skill 解析装配 |
-| `visual_evidence`（截图/视频 URL）| 作为 `Evidence` 条目：`url` = 媒体 URL，`source_title`/`summary` 注明 media_type + observed_feature；Skill 据约定抽成视觉证据表 |
+| `visual_evidence`（截图/视频 URL）| **选一条 url 指向媒体的搜索结果证据**，provenance 逐字复制（**不可改写 `summary`/`snippet`**，否则破坏 byte-equal 校验）；media_type/observed_feature/related_claim 写进**引用它的 `Finding.claim`** 结构块；Skill 据此抽成视觉证据表（§4）|
 | TM-4 认识论标注 | 复用 `finding_type`（fact/interpretation/assumption）+ `confidence`；推测类入 `assumptions`，反论入 `counterarguments`（Lapis 原生有此字段，正好承 TM-11）|
 | 4-tier 可信度 | Skill 后处理：`Evidence.source_type` + URL 域名 → 4-tier + 展示标签（§4）|
 
@@ -84,7 +84,7 @@ Lapis `Evidence.source_type` ∈ `{official, documentation, news, blog, forum, r
 | forum | 应用商店评论/社媒/论坛 | Tier 3（社区子类）| Low（仅情绪/线索/假设）|
 | unknown | 无日期/无法追溯 | Tier 4 | Unknown（不进核心结论）|
 
-- **视觉证据**：Skill 扫 `evidence_index`，凡 url 指向图片/视频/应用商店页且 prompt 约定的 media 标记命中 → 进规格 §6.2 的 visual_evidence 表（Ch 7）。Deep 模式若 <5 条 → 触发 Layer 2 浏览器（agent-browser/browser-use 走系统 Chrome）补抓，再回填。
+- **视觉证据**：Skill 扫 `evidence_index` + 各 `Finding.claim` 里的视觉标注块，凡 url 指向图片/视频/应用商店页 → 进规格 §6.2 的 visual_evidence 表（Ch 7）。媒体元数据（media_type/observed_feature）来自 claim 标注，**不来自被改写的 Evidence 字段**（保 byte-equal）。Deep 模式若 <5 条 → **Skill 层外部步骤**触发 Layer 2 浏览器（agent-browser/browser-use 走系统 Chrome）补抓——这是 Skill 在 Claude Code 侧的能力，**非 Lapis aspect agent 能力（aspect agent 只暴露 `search`）**，抓后回填。
 - **原子核验/语句级审计**（FActScore/DeepTRACE）：Skill 对关键 finding 抽样核验 `claim` 能否从 `evidence_refs` 指向的源推出（CiteEval）；不达标降置信或弃权。
 
 ---
@@ -98,6 +98,9 @@ Lapis `Evidence.source_type` ∈ `{official, documentation, news, blog, forum, r
 | Quick | 2 | 3 | 2 | 120000 |
 | Standard | 4 | 6 | 2 | 300000 |
 | Deep | 5–6 | 8 | 2–3 | 600000 |
+
+> **完整 budget 形状**（WS-B 生成 `DeepResearchRequest` 必须给齐，照 `prompts/layer1/task-decomposition.md` 输出 schema）：顶层 `budget{ max_agents, max_concurrent_agents, max_total_model_calls, max_total_search_calls, total_timeout_ms, max_tokens }` + 每 aspect `budget{ max_turns, max_tool_calls, max_search_calls, timeout_ms }`。上表只列了 tier 间差异最大的几项，其余字段也必须填。
+> **per-aspect `timeout_ms` 用 600000（10min）**：D3 实测 CPA(gpt-5.5)+grok-4.3 较慢，300000 会 `budget_exceeded`。服务端 toml budget 全 `-1` 不限，瓶颈只在请求里的 per-aspect timeout。
 
 - `evidence_policy.require_evidence_for_findings = true` 恒开（强制"宁少但真"——finding 必须带 evidence）。`min_evidence_per_finding`：Standard=1，Deep=2。
 - `model_policy.allowed_providers` / `search_policy.allowed_providers`：由用户 key 配置决定（无 Exa key 则只 grok）。**注意**：policy 的 allowed_providers 是授权白名单**不是 fallback 顺序**——降级顺序在 Skill 控制。
